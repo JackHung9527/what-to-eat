@@ -799,9 +799,29 @@
       // 格式 1: /maps/place/店名/@lat,lng,zoom/data=...
       const placeMatch = u.pathname.match(/\/maps\/place\/([^\/]+)/);
       if (placeMatch) {
-        let name = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ');
-        // 有些連結 place 後會接地址，用 "," 或 " " 隔開
-        result.name = name.split(/[,，]/)[0].trim();
+        const fullPlace = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ').trim();
+        // 有些連結的 place 段用 "," 分隔店名和地址
+        if (/[,，]/.test(fullPlace)) {
+          const parts = fullPlace.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+          result.name = parts[0];
+          if (parts.length > 1) {
+            const addrCandidate = parts.slice(1).join(', ');
+            if (/\d/.test(addrCandidate) || /[路街道巷弄號]/.test(addrCandidate)) {
+              result.address = addrCandidate;
+            }
+          }
+        } else {
+          // 沒有逗號分隔 → 可能整串是「郵遞區號+地址+店名」混在一起
+          // 先試用純文字解析器拆分
+          const textParsed = parsePlainTextAddress(fullPlace);
+          if (textParsed && textParsed.name && textParsed.address) {
+            result.name = textParsed.name;
+            result.address = textParsed.address;
+          } else {
+            // 純文字解析也失敗，整串當店名
+            result.name = fullPlace;
+          }
+        }
       }
 
       // 格式 2: /maps/search/店名?...
@@ -830,18 +850,6 @@
       if (preciseMatch) {
         result.lat = parseFloat(preciseMatch[1]);
         result.lng = parseFloat(preciseMatch[2]);
-      }
-
-      // 如果 place 段後半有地址樣式(有數字和路/號等),嘗試當地址
-      if (placeMatch) {
-        const fullPlace = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ');
-        const parts = fullPlace.split(/[,，]/).map(s => s.trim()).filter(Boolean);
-        if (parts.length > 1) {
-          const addrCandidate = parts.slice(1).join(', ');
-          if (/\d/.test(addrCandidate) || /[路街道巷弄號]/.test(addrCandidate)) {
-            result.address = addrCandidate;
-          }
-        }
       }
 
       // 若地址抓不到但有座標，用座標當備援地址（Apple Maps 可以直接用座標導航）
