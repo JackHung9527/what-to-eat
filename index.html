@@ -169,8 +169,26 @@
   }
   .import-row { display: flex; gap: 6px; align-items: center; }
   .import-row .form-input { flex: 1; }
+  .input-wrap {
+    position: relative; flex: 1; display: flex; align-items: center;
+  }
+  .input-wrap .form-input {
+    width: 100%; padding-right: 34px;
+  }
+  .clear-btn {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 22px; border-radius: 50%;
+    border: none; background: #ccc; color: white;
+    font-size: 14px; line-height: 1; font-weight: 700;
+    cursor: pointer; display: none;
+    align-items: center; justify-content: center;
+    padding: 0; font-family: inherit;
+  }
+  .clear-btn.show { display: flex; }
+  .clear-btn:active { background: #999; }
   .import-hint {
     font-size: 11px; color: #aaa; margin-top: 6px; line-height: 1.4;
+    white-space: pre-line;
   }
   .import-hint.success { color: #10b981; }
   .import-hint.error { color: #ff4757; }
@@ -214,6 +232,8 @@
     .btn-secondary { background: #3a3028; color: #ccc; }
     .store-tag { background: #3a2a1f; }
     .result-info { color: #bbb; }
+    .clear-btn { background: #555; }
+    .clear-btn:active { background: #777; }
   }
 </style>
 </head>
@@ -273,7 +293,10 @@
       <div class="import-box" id="importBox">
         <div class="form-label">📎 從連結或地址文字匯入</div>
         <div class="import-row">
-          <input type="text" class="form-input" id="fImportUrl" placeholder="貼上 Google Maps 連結 或 地址文字…" inputmode="url">
+          <div class="input-wrap">
+            <input type="text" class="form-input" id="fImportUrl" placeholder="貼上 Google Maps 連結 或 地址文字…" inputmode="url">
+            <button class="clear-btn" id="importClearBtn" type="button" aria-label="清除" title="清除">×</button>
+          </div>
           <button class="add-btn" id="importParseBtn" type="button">解析</button>
         </div>
         <div class="import-hint" id="importHint">支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字</div>
@@ -503,7 +526,8 @@
     // 新增模式才顯示匯入區
     document.getElementById('importBox').style.display = isEdit ? 'none' : 'block';
     document.getElementById('fImportUrl').value = '';
-    setImportHint('支援 google.com/maps/place/... 格式', '');
+    document.getElementById('importClearBtn').classList.remove('show');
+    setImportHint('支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字', '');
     const s = isEdit ? stores.find(x => x.id === id) : null;
     document.getElementById('fName').value = s?.name || '';
     document.getElementById('fAddr').value = s?.address || '';
@@ -794,11 +818,18 @@
         if (q) result.name = q.trim();
       }
 
-      // 抓座標 @lat,lng,zoom
+      // 抓座標 @lat,lng,zoom（這個是「目前視角」，街景時可能不是店家位置）
       const coordMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
       if (coordMatch) {
         result.lat = parseFloat(coordMatch[1]);
         result.lng = parseFloat(coordMatch[2]);
+      }
+
+      // 更精確的座標在 data 參數內 !3dLAT!4dLNG（這是店家真實位置，優先用）
+      const preciseMatch = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (preciseMatch) {
+        result.lat = parseFloat(preciseMatch[1]);
+        result.lng = parseFloat(preciseMatch[2]);
       }
 
       // 如果 place 段後半有地址樣式(有數字和路/號等),嘗試當地址
@@ -811,6 +842,12 @@
             result.address = addrCandidate;
           }
         }
+      }
+
+      // 若地址抓不到但有座標，用座標當備援地址（Apple Maps 可以直接用座標導航）
+      if (!result.address && result.lat && result.lng) {
+        result.address = `${result.lat},${result.lng}`;
+        result.addressIsCoord = true;
       }
 
       if (!result.name) return null;
@@ -869,15 +906,21 @@
 
     const filled = [];
     if (parsed.name) filled.push('店名');
-    if (parsed.address) filled.push('地址');
-    if (parsed.lat) filled.push('座標');
-    setImportHint(`✓ 已自動填入：${filled.join('、')}`, 'success');
+    if (parsed.address && !parsed.addressIsCoord) filled.push('地址');
+    if (parsed.addressIsCoord) filled.push('地址(座標)');
+    else if (parsed.lat) filled.push('座標');
+    let msg = `✓ 已自動填入：${filled.join('、')}`;
+    if (parsed.addressIsCoord) {
+      msg += '\n※ 此連結沒有文字地址，用座標代替（導航仍可用）。若要顯示門牌地址，可手動替換。';
+    }
+    setImportHint(msg, 'success');
   });
 
   // 貼上時自動解析
   document.getElementById('fImportUrl').addEventListener('paste', (e) => {
     setTimeout(() => {
       const v = e.target.value.trim();
+      updateClearBtn();
       if (!v) return;
       // URL 或疑似台灣地址（包含縣市）都自動觸發
       if (/google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(v) ||
@@ -885,6 +928,23 @@
         document.getElementById('importParseBtn').click();
       }
     }, 50);
+  });
+
+  // 輸入時同步顯示/隱藏清除按鈕
+  function updateClearBtn() {
+    const input = document.getElementById('fImportUrl');
+    const btn = document.getElementById('importClearBtn');
+    btn.classList.toggle('show', input.value.length > 0);
+  }
+  document.getElementById('fImportUrl').addEventListener('input', updateClearBtn);
+
+  // 清除按鈕：一鍵清空匯入欄 + 重置提示
+  document.getElementById('importClearBtn').addEventListener('click', () => {
+    const input = document.getElementById('fImportUrl');
+    input.value = '';
+    updateClearBtn();
+    setImportHint('支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字', '');
+    input.focus();
   });
 
   // 🔍 用 Google Maps 搜尋此店
