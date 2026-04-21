@@ -174,6 +174,7 @@
   }
   .import-hint.success { color: #10b981; }
   .import-hint.error { color: #ff4757; }
+  .import-hint a { color: #ff6b35; text-decoration: underline; font-weight: 600; }
   .add-btn-sec {
     background: #fff1e8 !important;
     color: #ff6b35 !important;
@@ -270,12 +271,12 @@
       <div class="modal-title" id="modalTitle">新增店家</div>
 
       <div class="import-box" id="importBox">
-        <div class="form-label">📎 從 Google Maps 連結匯入</div>
+        <div class="form-label">📎 從連結或地址文字匯入</div>
         <div class="import-row">
-          <input type="text" class="form-input" id="fImportUrl" placeholder="貼上 Google Maps 連結…" inputmode="url">
+          <input type="text" class="form-input" id="fImportUrl" placeholder="貼上 Google Maps 連結 或 地址文字…" inputmode="url">
           <button class="add-btn" id="importParseBtn" type="button">解析</button>
         </div>
-        <div class="import-hint" id="importHint">支援 google.com/maps/place/... 格式</div>
+        <div class="import-hint" id="importHint">支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字</div>
       </div>
 
       <div class="form-group">
@@ -710,6 +711,49 @@
     el.className = 'import-hint' + (type ? ' ' + type : '');
   }
 
+  // 解析「郵遞區號+地址+店名」這種單行純文字
+  // 例子：104臺北市中山區南京西路12號鼎泰豐 南西店B2
+  //      10491 台北市中山區南京西路 12 號 2 樓 某某餐廳
+  function parsePlainTextAddress(raw) {
+    let s = raw.trim().replace(/\s+/g, ' ');
+    if (!s) return null;
+
+    // 拔開頭郵遞區號（3-6 碼數字，可能夾空白或 "-"）
+    s = s.replace(/^(\d{3,6})[\s\-]*/, '');
+
+    // 找地址起始：必須是「X縣/X市」或「X縣Y市」
+    const cityMatch = s.match(/([\u4e00-\u9fa5]{1,3}[縣市])/);
+    if (!cityMatch) return null;
+    const cityStart = s.indexOf(cityMatch[0]);
+    // 丟掉縣市名前面的雜訊
+    s = s.slice(cityStart);
+
+    // 地址結尾特徵：在「號」「樓」「室」「F」「B數字」這類關鍵字之後
+    // 抓出「地址」區段：從開頭到最後一個地址關鍵字結束
+    // 正則優先匹配 ...號X樓 / ...號 之X / ...號 XF / ...號 BX / ...號之X
+    const addrPattern = /^(.+?[路街道巷弄段]\s?\d+[\-之\d]*號(?:\s?[\d\-之]+(?:樓|F|f)?)?(?:\s?之\d+)?(?:\s?[Bb]\d+)?(?:\s?\d+\s?樓)?)/;
+    let addrMatch = s.match(addrPattern);
+
+    // 若沒匹配到（例如地址沒有路名只有「XX區XX號」），試寬鬆版
+    if (!addrMatch) {
+      addrMatch = s.match(/^(.+?\d+\s?號(?:\s?[Bb]?\d+\s?[樓F]?)?(?:\s?之\d+)?)/);
+    }
+    if (!addrMatch) return null;
+
+    let address = addrMatch[1].trim();
+    let rest = s.slice(addrMatch[0].length).trim();
+
+    // 店名可能還帶分店「XX 南西店B2」→ 這個「B2」是店內位置，保留給備註
+    // 這裡單純把剩下的當店名
+    let name = rest;
+
+    // 清理地址中多餘空白
+    address = address.replace(/\s+/g, '');
+
+    if (!name) return null;
+    return { name, address };
+  }
+
   // 解析 Google Maps 連結，抓出店名和地址
   function parseGoogleMapsUrl(raw) {
     const url = raw.trim();
@@ -776,21 +820,41 @@
     }
   }
 
+  // 統一入口：判斷是 URL 還是純文字，分別呼叫對應解析器
+  function parseInput(raw) {
+    const s = raw.trim();
+    if (!s) return null;
+    // 看起來像 URL
+    if (/^https?:\/\//i.test(s) || /google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(s)) {
+      return parseGoogleMapsUrl(s);
+    }
+    // 否則當純文字
+    return parsePlainTextAddress(s);
+  }
+
   document.getElementById('importParseBtn').addEventListener('click', () => {
     const raw = document.getElementById('fImportUrl').value;
     if (!raw.trim()) {
-      setImportHint('請先貼上連結', 'error');
+      setImportHint('請先貼上連結或地址', 'error');
       return;
     }
-    const parsed = parseGoogleMapsUrl(raw);
+    const parsed = parseInput(raw);
 
     if (!parsed) {
-      setImportHint('無法辨識這個連結，請確認格式正確', 'error');
+      setImportHint('無法辨識，請貼 Google Maps 連結、或「郵遞區號+地址+店名」格式', 'error');
       return;
     }
 
     if (parsed.shortLink) {
-      setImportHint('偵測到短連結，短連結無法直接解析。請在 Safari 打開這個短連結，等它跳轉後從網址列複製完整連結再試一次。', 'error');
+      const rawUrl = raw.trim();
+      const safe = rawUrl.replace(/"/g, '&quot;');
+      document.getElementById('importHint').className = 'import-hint error';
+      document.getElementById('importHint').innerHTML =
+        `偵測到 Google Maps 短連結，無法直接解析。<br>` +
+        `① <a href="${safe}" target="_blank" rel="noopener">點這裡在新分頁打開</a><br>` +
+        `② 等 Google Maps 載入完成後，從網址列複製完整的長連結<br>` +
+        `③ 回來貼到此欄位，再按解析<br>` +
+        `（或直接在 Google Maps 點「複製地址」，貼回來也行）`;
       return;
     }
 
@@ -814,7 +878,10 @@
   document.getElementById('fImportUrl').addEventListener('paste', (e) => {
     setTimeout(() => {
       const v = e.target.value.trim();
-      if (v && /google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(v)) {
+      if (!v) return;
+      // URL 或疑似台灣地址（包含縣市）都自動觸發
+      if (/google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(v) ||
+          /[\u4e00-\u9fa5]{1,3}[縣市]/.test(v)) {
         document.getElementById('importParseBtn').click();
       }
     }, 50);
