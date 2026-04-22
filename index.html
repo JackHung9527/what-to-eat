@@ -1811,6 +1811,7 @@
       </div>
       ${s.address ? `<div class="result-row"><span class="r-label">地址</span><span class="r-value">${mapUrl ? `<a href="${mapUrl}" target="_blank">${esc(s.address)}</a>` : esc(s.address)}</span></div>` : ''}
       ${s.hours ? `<div class="result-row"><span class="r-label">時間</span><span class="r-value">${esc(s.hours)}</span></div>` : ''}
+      ${priceText ? `<div class="result-row"><span class="r-label">價格</span><span class="r-value">${esc(priceText)}</span></div>` : ''}
       ${s.note ? `<div class="result-row"><span class="r-label">備註</span><span class="r-value">${esc(s.note)}</span></div>` : ''}
       <div class="result-actions">
         <button class="result-btn" onclick="pickStore()">再抽一次</button>
