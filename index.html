@@ -2302,6 +2302,18 @@
   applyTweaks(tweakState);
   window.parent.postMessage({type:'__edit_mode_available'}, '*');
 
+  // ========== SYNC NAV PADDING ==========
+  function syncNavPadding() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    const h = nav.getBoundingClientRect().height;
+    document.body.style.paddingBottom = (h + 24) + 'px';
+  }
+  syncNavPadding();
+  window.addEventListener('resize', syncNavPadding);
+  window.addEventListener('orientationchange', syncNavPadding);
+  window.addEventListener('load', syncNavPadding);
+
   // ========== INIT ==========
   applyRecommendation();
   renderStoreList();
