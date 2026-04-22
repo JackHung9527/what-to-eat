@@ -72,6 +72,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 補上 iOS PWA 識別 meta：`apple-mobile-web-app-capable`、`mobile-web-app-capable`、`apple-mobile-web-app-status-bar-style`、`apple-mobile-web-app-title`
 - 抽店家 / 抽方向加入「避免連抽相同」邏輯：pool > 1 時以 `lastPickedId` / `lastPickedCat` 排除上次結果；pool 只剩 1 家時 toast 提示使用者新增更多店家
 - 結果卡新增「價格」專屬 row（與地址、時間、備註同格式），比原本 meta row 的小 `＄` tag 醒目得多
+- FAB 在 sheet 開啟時淡出：透過 `body.nav-sheet-open` class 驅動 `opacity: 0` + `pointer-events: none`，與 sheet slide 動畫同步（0.25s）；抽出 `openNavSheet()` / `closeNavSheet()` helper 統一管理 overlay + body class
 
 #### 問題與踩坑
 - **iOS PWA 一旦加入主畫面就凍結 HTML 快取**：網頁更新後 PWA 不會跟著，必須刪除主畫面 icon 重新加入。改了很多次 CSS/JS 使用者一直看到舊版，診斷耗時。此為 iOS 設計，無法從程式端繞過
