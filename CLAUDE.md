@@ -63,8 +63,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 2026/04/22
 
 #### 完成項目
-- 建立專案 CLAUDE.md，記錄單檔 SPA 架構、localStorage schema 與 migration 規則、`EDITMODE` 標記、匯入解析與 PWA 匯出雙路徑等非顯而易見的重點
-- 修正手機上底部 nav 擋住主內容：新增 CSS 變數 `--nav-h: 84px`，`body` 底部 padding 改為 `calc(env(safe-area-inset-bottom) + var(--nav-h) + 32px)`，把原本僅 12px 的緩衝拉高到約 32px
+- 建立專案 CLAUDE.md 初版，記錄單檔 SPA 架構、localStorage schema 與 migration 規則、`EDITMODE` 標記、匯入解析、PWA 匯出雙路徑等非顯而易見的重點
+- 底部 nav 擋內容問題最終解法：從 CSS padding 調整 → JS 動態量測 → 硬保底值，全部 iterate 過仍卡關，**根本改造**為右下 FAB + 彈出 sheet：
+  - 新增 `.nav-fab`（右下 56×56 圓形按鈕，顯示當前頁面 glyph）
+  - 新增 `.nav-sheet-overlay` / `.nav-sheet`（點 FAB 從底部滑上來的選單）
+  - `switchPage(pageId)` 統一處理 page 切換、sheet 關閉、FAB glyph 同步（`FAB_LABELS`）、listPage 自動 `renderStoreList()`
+  - 移除 `.bottom-nav` / `.nav-btn` / `--nav-h` CSS 變數 / `syncNavPadding()` JS
+- 補上 iOS PWA 識別 meta：`apple-mobile-web-app-capable`、`mobile-web-app-capable`、`apple-mobile-web-app-status-bar-style`、`apple-mobile-web-app-title`
+- 抽店家 / 抽方向加入「避免連抽相同」邏輯：pool > 1 時以 `lastPickedId` / `lastPickedCat` 排除上次結果；pool 只剩 1 家時 toast 提示使用者新增更多店家
+- 結果卡新增「價格」專屬 row（與地址、時間、備註同格式），比原本 meta row 的小 `＄` tag 醒目得多
 
 #### 問題與踩坑
-- 底部 nav 實際高度（8 + 68 + 8 + safe-area ≈ 84 + safe-area）超過原先 `body` 保留的 96px 緩衝空間，導致最後一張 store-card 在某些手機上被貼到 nav 邊界。根因為 nav-btn 的 glyph(30px) + gap(4px) + 文字 + 上下 padding 比預期高，已透過集中式 `--nav-h` 變數加 buffer 解決
+- **iOS PWA 一旦加入主畫面就凍結 HTML 快取**：網頁更新後 PWA 不會跟著，必須刪除主畫面 icon 重新加入。改了很多次 CSS/JS 使用者一直看到舊版，診斷耗時。此為 iOS 設計，無法從程式端繞過
+- `env(safe-area-inset-bottom)` 在 PWA 與 Safari 模式回傳值不同，靜態 CSS 加固定 buffer 很難全 cover 所有裝置
+- `document.fonts.ready` Promise 在 iOS PWA 下可能不 resolve，改用 `setTimeout(300)` / `setTimeout(1500)` 多時間點補算
+- 最後判斷繼續 iterate padding 值 ROI 太低，直接改造 nav 形式徹底繞開——這個決策來自使用者明確要求「下面的選單可以移到別的地方嗎」
+
+#### 架構變更備註（供下次 Claude 參照）
+- 切換 page 統一走 `switchPage(pageId)`；不要再找 `.nav-btn` 或操作 `.bottom-nav`
+- `body` 底部 padding 已回歸正常值 `calc(env(safe-area-inset-bottom) + 32px)`，不再需要保留 nav 空間（FAB 是 fixed 獨立小按鈕，不大範圍擋內容）
+- `FAB_LABELS = { pickPage: '抽', catPage: '方', listPage: '單' }`，新增 page 要同步這張對應表
