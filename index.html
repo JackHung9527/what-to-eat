@@ -30,7 +30,6 @@
     --line-strong: rgba(42,37,32,0.28);
     --shadow: 0 2px 12px rgba(60,40,20,0.08), 0 8px 40px rgba(60,40,20,0.06);
     --shadow-lg: 0 4px 24px rgba(60,40,20,0.12), 0 20px 60px rgba(60,40,20,0.1);
-    --nav-h: 120px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -64,7 +63,7 @@
     min-height: 100vh;
     max-width: 440px;
     margin: 0 auto;
-    padding: 0 20px calc(env(safe-area-inset-bottom) + 200px) 20px;
+    padding: 0 20px calc(env(safe-area-inset-bottom) + 32px) 20px;
     position: relative;
   }
 
@@ -1089,49 +1088,104 @@
   }
   .empty-state .msg { font-size: 14px; line-height: 1.7; }
 
-  /* ========== BOTTOM NAV (3 items) ========== */
-  .bottom-nav {
+  /* ========== NAV FAB + SHEET ========== */
+  .nav-fab {
     position: fixed;
-    bottom: 0; left: 0; right: 0;
-    max-width: 440px;
-    margin: 0 auto;
-    display: flex;
-    background: rgba(242,236,224,0.92);
-    backdrop-filter: blur(18px) saturate(1.2);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2);
-    border-top: 1px solid var(--line);
-    padding: 8px 20px calc(env(safe-area-inset-bottom) + 8px);
-    z-index: 20;
-  }
-  .nav-btn {
-    flex: 1;
-    padding: 8px 4px;
+    right: 16px;
+    bottom: calc(env(safe-area-inset-bottom) + 16px);
+    width: 56px; height: 56px;
+    border-radius: 50%;
     border: none;
-    background: transparent;
-    font-family: inherit;
-    font-size: 11px;
-    color: var(--ink-3);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    font-weight: 600;
-    letter-spacing: 1px;
-  }
-  .nav-btn .nav-glyph {
-    font-family: 'Noto Serif TC', serif;
-    font-size: 18px;
-    font-weight: 900;
-    width: 30px; height: 30px;
-    display: grid; place-items: center;
-    border-radius: 10px;
-    transition: all 0.2s;
-  }
-  .nav-btn.active { color: var(--ink); }
-  .nav-btn.active .nav-glyph {
     background: var(--ink);
     color: var(--paper);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 14px rgba(42,37,32,0.28), 0 10px 26px rgba(42,37,32,0.18);
+    z-index: 30;
+    transition: transform 0.15s ease;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+  .nav-fab:active { transform: scale(0.92); }
+  .nav-fab:hover { transform: translateY(-1px); }
+
+  .nav-sheet-overlay {
+    position: fixed; inset: 0;
+    background: rgba(42,37,32,0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s;
+    z-index: 40;
+  }
+  .nav-sheet-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  .nav-sheet {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 100%);
+    max-width: 440px;
+    width: 100%;
+    background: var(--paper);
+    border-radius: 20px 20px 0 0;
+    padding: 14px 20px calc(env(safe-area-inset-bottom) + 20px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 -6px 28px rgba(42,37,32,0.22);
+  }
+  .nav-sheet-overlay.show .nav-sheet {
+    transform: translate(-50%, 0);
+  }
+  .nav-sheet-grip {
+    width: 40px; height: 4px;
+    background: var(--line-strong);
+    border-radius: 2px;
+    margin: 0 auto 10px;
+  }
+  .nav-sheet-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-align: left;
+    transition: background 0.15s ease;
+  }
+  .nav-sheet-btn:active { background: var(--paper-3); }
+  .nav-sheet-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .nav-sheet-glyph {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px;
+    font-weight: 900;
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    border-radius: 8px;
+    background: rgba(42,37,32,0.06);
+    flex-shrink: 0;
+  }
+  .nav-sheet-btn.active .nav-sheet-glyph {
+    background: rgba(255,255,255,0.18);
   }
 
   /* ========== MODAL ========== */
@@ -1443,21 +1497,27 @@
   <div id="storeList"></div>
 </div>
 
-<!-- ============ BOTTOM NAV (3 tabs) ============ -->
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-page="pickPage">
-    <span class="nav-glyph">抽</span>
-    <span>抽店家</span>
-  </button>
-  <button class="nav-btn" data-page="catPage">
-    <span class="nav-glyph">方</span>
-    <span>抽方向</span>
-  </button>
-  <button class="nav-btn" data-page="listPage">
-    <span class="nav-glyph">單</span>
-    <span>我的名單</span>
-  </button>
-</nav>
+<!-- ============ NAV FAB + SHEET ============ -->
+<button class="nav-fab" id="navFab" aria-label="切換頁面">
+  <span id="navFabGlyph">抽</span>
+</button>
+<div class="nav-sheet-overlay" id="navSheetOverlay">
+  <div class="nav-sheet">
+    <div class="nav-sheet-grip"></div>
+    <button class="nav-sheet-btn active" data-page="pickPage">
+      <span class="nav-sheet-glyph">抽</span>
+      <span>抽店家</span>
+    </button>
+    <button class="nav-sheet-btn" data-page="catPage">
+      <span class="nav-sheet-glyph">方</span>
+      <span>抽方向</span>
+    </button>
+    <button class="nav-sheet-btn" data-page="listPage">
+      <span class="nav-sheet-glyph">單</span>
+      <span>我的名單</span>
+    </button>
+  </div>
+</div>
 
 <!-- ============ MODAL ============ -->
 <div class="modal-overlay" id="modalOverlay">
@@ -1616,15 +1676,35 @@
     });
   }
 
-  // ========== NAV ==========
-  document.querySelectorAll('.nav-btn').forEach(btn => {
+  // ========== NAV (FAB + SHEET) ==========
+  const FAB_LABELS = { pickPage: '抽', catPage: '方', listPage: '單' };
+  const navFab = document.getElementById('navFab');
+  const navFabGlyph = document.getElementById('navFabGlyph');
+  const navSheetOverlay = document.getElementById('navSheetOverlay');
+
+  function switchPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.nav-sheet-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.page === pageId);
+    });
+    navFabGlyph.textContent = FAB_LABELS[pageId] || '選';
+    if (pageId === 'listPage') renderStoreList();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  navFab.addEventListener('click', () => {
+    navSheetOverlay.classList.add('show');
+  });
+  navSheetOverlay.addEventListener('click', (e) => {
+    if (e.target === navSheetOverlay) {
+      navSheetOverlay.classList.remove('show');
+    }
+  });
+  document.querySelectorAll('.nav-sheet-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.page).classList.add('active');
-      if (btn.dataset.page === 'listPage') renderStoreList();
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      switchPage(btn.dataset.page);
+      navSheetOverlay.classList.remove('show');
     });
   });
 
@@ -1906,10 +1986,7 @@
 
   window.goPickStoreWithCat = function(cat) {
     // Switch to pick page and set filter
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelector('[data-page="pickPage"]').classList.add('active');
-    document.getElementById('pickPage').classList.add('active');
+    switchPage('pickPage');
 
     filter.categories = [cat];
     const c = document.getElementById('categoryChips');
@@ -2320,23 +2397,6 @@
   }
   applyTweaks(tweakState);
   window.parent.postMessage({type:'__edit_mode_available'}, '*');
-
-  // ========== SYNC NAV PADDING ==========
-  // 三層保險確保底部 nav 不擋內容：CSS 固定值 + JS 動態量測 + 每個 page 底部 spacer
-  function syncNavPadding() {
-    const nav = document.querySelector('.bottom-nav');
-    if (!nav) return;
-    const h = nav.getBoundingClientRect().height;
-    if (h <= 0) return;
-    document.body.style.paddingBottom = Math.max(h + 40, 400) + 'px';
-  }
-  syncNavPadding();
-  requestAnimationFrame(syncNavPadding);
-  setTimeout(syncNavPadding, 300);
-  setTimeout(syncNavPadding, 1500);
-  window.addEventListener('resize', syncNavPadding);
-  window.addEventListener('orientationchange', syncNavPadding);
-  window.addEventListener('load', syncNavPadding);
 
   // ========== INIT ==========
   applyRecommendation();
