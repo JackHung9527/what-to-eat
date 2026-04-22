@@ -1,379 +1,1615 @@
 <!DOCTYPE html>
-
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="吃什麼">
-<meta name="theme-color" content="#ff6b35">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>吃什麼？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --paper: #f2ece0;
+    --paper-2: #ebe3d3;
+    --paper-3: #e2d8c3;
+    --ink: #2a2520;
+    --ink-2: #5a5148;
+    --ink-3: #8a8275;
+    --ink-4: #b8ac98;
+    --vermilion: #7a8a4b;
+    --vermilion-dark: #5b6838;
+    --seal: #7a8a4b;
+    --matcha: #7a8a4b;
+    --sun: #d9a441;
+    --indigo: #2e4a6b;
+    --line: rgba(42,37,32,0.12);
+    --line-strong: rgba(42,37,32,0.28);
+    --shadow: 0 2px 12px rgba(60,40,20,0.08), 0 8px 40px rgba(60,40,20,0.06);
+    --shadow-lg: 0 4px 24px rgba(60,40,20,0.12), 0 20px 60px rgba(60,40,20,0.1);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
   html, body {
     height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Helvetica Neue", sans-serif;
-    background: linear-gradient(160deg, #fff5eb 0%, #ffe8d6 100%);
-    color: #2d2d2d;
+    font-family: 'Noto Sans TC', -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
     overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
   }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(122,138,75,0.05), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 85% 90%, rgba(122,138,75,0.05), transparent 60%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.2 0 0 0 0.18 0'/></filter><rect width='400' height='400' filter='url(%23n)'/></svg>");
+    background-size: auto, auto, 400px 400px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+    mix-blend-mode: multiply;
+  }
+
   body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding: env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 100px) 16px;
-    max-width: 500px;
+    max-width: 440px;
     margin: 0 auto;
+    padding: 0 20px calc(env(safe-area-inset-bottom) + 96px) 20px;
+    position: relative;
   }
-  header { padding: 8px 0 4px; text-align: center; }
-  h1 { font-size: 20px; font-weight: 800; color: #ff6b35; letter-spacing: 2px; }
 
-.bottom-nav {
-position: fixed; bottom: 0; left: 0; right: 0;
-display: flex;
-background: rgba(255,255,255,0.95);
-backdrop-filter: blur(20px);
-border-top: 1px solid #eee;
-padding: 8px env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 8px) env(safe-area-inset-left);
-z-index: 10;
-}
-.nav-btn {
-flex: 1; padding: 8px; border: none; background: transparent;
-font-size: 13px; color: #999; cursor: pointer;
-}
-.nav-btn.active { color: #ff6b35; font-weight: 700; }
-.nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+  header {
+    padding: 22px 0 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 2;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .seal {
+    width: 38px; height: 38px;
+    background: var(--seal);
+    border-radius: 6px;
+    display: grid; place-items: center;
+    color: var(--paper);
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 20px;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.15), 0 2px 6px rgba(122,138,75,0.3);
+    transform: rotate(-4deg);
+    position: relative;
+  }
+  .seal::after {
+    content: '';
+    position: absolute; inset: 3px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 3px;
+  }
+  .brand-text { display: flex; flex-direction: column; gap: 2px; }
+  .brand-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px; font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .brand-sub {
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--ink-3); text-transform: uppercase;
+  }
+  .time-badge {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    font-size: 11px; color: var(--ink-2);
+    backdrop-filter: blur(4px);
+  }
+  .time-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--matcha);
+    box-shadow: 0 0 0 3px rgba(122,138,75,0.2);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-.page { display: none; }
-.page.active { display: flex; flex-direction: column; flex: 1; }
+  .page { display: none; flex-direction: column; flex: 1; position: relative; z-index: 2; animation: fadeIn 0.3s ease; }
+  .page.active { display: flex; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-.filter-section {
-background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px;
-box-shadow: 0 4px 16px rgba(255,107,53,0.08);
-}
-.filter-label {
-font-size: 13px; color: #999; margin-bottom: 8px; font-weight: 600;
-}
-.chip-group {
-display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
-}
-.chip-group:last-child { margin-bottom: 0; }
-.chip {
-padding: 7px 14px; border: 1.5px solid #eee; background: white;
-border-radius: 20px; font-size: 13px; color: #666; cursor: pointer;
-transition: all 0.15s; font-family: inherit;
-}
-.chip.active { background: #ff6b35; border-color: #ff6b35; color: white; }
+  .hint-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(180deg, #fffaf0, #f5f0dd);
+    border: 1px dashed rgba(122,138,75,0.4);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .hint-row .hint-label {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 700;
+    color: var(--vermilion);
+    padding-right: 8px;
+    border-right: 1px solid rgba(122,138,75,0.3);
+    margin-right: 2px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
 
-.result-card {
-background: white; border-radius: 20px; padding: 24px 20px; margin-bottom: 12px;
-box-shadow: 0 8px 30px rgba(255,107,53,0.12); min-height: 180px;
-display: flex; flex-direction: column; justify-content: center;
-}
-.result-empty { text-align: center; color: #bbb; font-size: 15px; white-space: pre-line; }
-.result-name {
-font-size: 28px; font-weight: 800; color: #ff6b35;
-margin-bottom: 10px; text-align: center;
-}
-.result-name.rolling { animation: shake 0.08s infinite; }
-@keyframes shake {
-0%, 100% { transform: translateY(0); }
-50% { transform: translateY(-3px); }
-}
-.result-stars {
-text-align: center; font-size: 18px; margin-bottom: 12px; color: #ffa500;
-}
-.result-info {
-font-size: 14px; color: #555; margin-bottom: 6px;
-display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
-}
-.result-info .icon { font-size: 16px; flex-shrink: 0; }
-.result-info .text { flex: 1; word-break: break-word; }
-.result-info a { color: #ff6b35; text-decoration: none; font-weight: 600; }
+  .filter-card {
+    background: #fbf6eb;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 14px 10px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .filter-card::before {
+    content: '';
+    position: absolute;
+    top: 10px; bottom: 10px; left: 0;
+    width: 3px;
+    background: var(--vermilion);
+    border-radius: 0 2px 2px 0;
+  }
+  .filter-title {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .filter-title .label {
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--ink-3); font-weight: 700;
+  }
+  .filter-title .auto {
+    font-size: 10px;
+    color: var(--matcha);
+    background: rgba(122,138,75,0.12);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .filter-title .multi-note {
+    font-size: 10px;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
 
-.pick-btn {
-width: 100%; padding: 16px; border: none;
-background: linear-gradient(135deg, #ff6b35, #ff8c42);
-color: white; font-size: 17px; font-weight: 700;
-border-radius: 16px; cursor: pointer; letter-spacing: 2px;
-box-shadow: 0 6px 20px rgba(255,107,53,0.4);
-transition: transform 0.1s; font-family: inherit;
-margin-bottom: 16px;
-}
-.pick-btn:active { transform: scale(0.97); }
-.pick-btn:disabled { opacity: 0.5; }
+  .chip-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .chip-row:last-child { margin-bottom: 0; }
+  .chip-row.divider {
+    border-top: 1px dashed var(--line);
+    padding-top: 10px;
+  }
+  .chip {
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .chip:hover { border-color: var(--line-strong); }
+  .chip.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .chip.accent.active {
+    background: var(--vermilion);
+    color: var(--paper);
+    border-color: var(--vermilion-dark);
+  }
+  .chip.recommend::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--vermilion);
+  }
 
-.list-header {
-display: flex; justify-content: space-between; align-items: center;
-margin-bottom: 12px;
-}
-.data-tools {
-display: flex; gap: 6px; margin-bottom: 12px;
-}
-.tool-btn {
-flex: 1; padding: 8px 4px; border: 1.5px solid #eee; background: white;
-border-radius: 10px; font-size: 13px; color: #666; cursor: pointer;
-font-family: inherit; font-weight: 600;
-}
-.tool-btn:active { transform: scale(0.96); }
-.tool-btn-danger { color: #ff4757; border-color: #ffd0d5; }
-.add-store-btn {
-padding: 10px 16px; border: none; background: #ff6b35; color: white;
-border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer;
-box-shadow: 0 4px 12px rgba(255,107,53,0.3); font-family: inherit;
-}
-.store-count { font-size: 14px; color: #888; }
-.store-item {
-background: white; border-radius: 14px; padding: 14px; margin-bottom: 10px;
-box-shadow: 0 2px 10px rgba(0,0,0,0.04); cursor: pointer;
-}
-.store-item-top {
-display: flex; justify-content: space-between; align-items: center;
-margin-bottom: 4px;
-}
-.store-name { font-size: 17px; font-weight: 700; }
-.store-stars { color: #ffa500; font-size: 14px; }
-.store-meta {
-font-size: 12px; color: #999; display: flex; gap: 6px; flex-wrap: wrap;
-}
-.store-tag {
-background: #fff1e8; color: #ff6b35; padding: 2px 8px;
-border-radius: 10px; font-size: 11px; font-weight: 600;
-}
-.empty-list {
-text-align: center; color: #bbb; padding: 40px 20px;
-font-size: 14px; line-height: 1.6;
-}
+  /* ========== OMIKUJI TUBE (籤筒) — 竹筒版 ========== */
+  .omikuji-tube {
+    position: relative;
+    width: 150px;
+    height: 100%;
+    cursor: pointer;
+    filter: drop-shadow(0 12px 24px rgba(60,40,20,0.2));
+  }
+  /* main bamboo body */
+  .tube-body {
+    position: absolute;
+    bottom: 4%; left: 0; right: 0;
+    height: 72%;
+    background:
+      /* soft vertical highlight */
+      linear-gradient(90deg,
+        rgba(0,0,0,0.22) 0%,
+        rgba(0,0,0,0.05) 14%,
+        rgba(255,255,255,0.18) 38%,
+        rgba(255,255,255,0.22) 50%,
+        rgba(255,255,255,0.1) 66%,
+        rgba(0,0,0,0.08) 86%,
+        rgba(0,0,0,0.22) 100%),
+      linear-gradient(180deg, #b8935e 0%, #9c7a45 50%, #7d5f30 100%);
+    background-blend-mode: overlay, normal;
+    border-radius: 4px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,240,210,0.4),
+      inset 0 -3px 6px rgba(0,0,0,0.2);
+  }
+  /* bamboo ring segments */
+  .tube-body::before {
+    content: '';
+    position: absolute; left: -2px; right: -2px;
+    top: 20%;
+    height: 5px;
+    background: linear-gradient(180deg, #5c4220 0%, #8a6738 50%, #5c4220 100%);
+    border-radius: 50% / 60%;
+    box-shadow:
+      0 45% 0 -2px #5c4220,
+      inset 0 1px 0 rgba(255,240,210,0.25),
+      inset 0 -1px 0 rgba(0,0,0,0.3);
+  }
+  .tube-body::after {
+    content: '';
+    position: absolute; left: -2px; right: -2px;
+    bottom: 10%;
+    height: 5px;
+    background: linear-gradient(180deg, #5c4220 0%, #8a6738 50%, #5c4220 100%);
+    border-radius: 50% / 60%;
+    box-shadow:
+      inset 0 1px 0 rgba(255,240,210,0.25),
+      inset 0 -1px 0 rgba(0,0,0,0.3);
+  }
+  /* top rim — darker, forms the mouth */
+  .tube-top {
+    position: absolute;
+    top: 22%; left: -4px; right: -4px;
+    height: 12px;
+    background: linear-gradient(180deg, #4a3418 0%, #6b4a22 50%, #3a2810 100%);
+    border-radius: 4px 4px 2px 2px;
+    box-shadow:
+      inset 0 2px 3px rgba(0,0,0,0.5),
+      inset 0 -1px 0 rgba(255,240,210,0.2),
+      0 2px 0 rgba(0,0,0,0.15);
+  }
+  .tube-mouth {
+    position: absolute;
+    top: 23.2%; left: 3px; right: 3px;
+    height: 7px;
+    background: radial-gradient(ellipse at center, #0a0502 0%, #1f1408 90%);
+    border-radius: 50% / 80%;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.9);
+  }
+  /* label panel — vermilion vertical tablet with washi feel */
+  .tube-label {
+    position: absolute;
+    left: 50%; top: 52%;
+    transform: translate(-50%, -50%);
+    writing-mode: vertical-rl;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    color: #fff8ea;
+    font-size: 19px;
+    letter-spacing: 10px;
+    padding: 14px 5px 10px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.1), rgba(0,0,0,0.15)),
+      linear-gradient(180deg, #b83a28 0%, #9e2a1a 100%);
+    border: 1.5px solid rgba(255,248,234,0.5);
+    border-radius: 2px;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.3),
+      0 2px 4px rgba(0,0,0,0.2);
+    z-index: 3;
+  }
+  /* rope tie wrap around tube */
+  .tube-rope {
+    position: absolute;
+    left: -6px; right: -6px;
+    bottom: 18%;
+    height: 14px;
+    background:
+      repeating-linear-gradient(45deg,
+        #2a1e10 0 3px,
+        #4a3620 3px 6px),
+      #3a2815;
+    border-radius: 3px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,240,210,0.2),
+      inset 0 -1px 0 rgba(0,0,0,0.5),
+      0 2px 4px rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+  .tube-rope::before, .tube-rope::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 6px;
+    background: repeating-linear-gradient(45deg, #2a1e10 0 2px, #4a3620 2px 4px), #3a2815;
+    border-radius: 3px;
+    transform: translateY(-50%) rotate(-6deg);
+  }
+  .tube-rope::before { left: 18%; }
+  .tube-rope::after { right: 18%; transform: translateY(-50%) rotate(6deg); }
+  .tube-base {
+    display: none;
+  }
+  .tube-label {
+    position: absolute;
+    left: 50%; top: 42%;
+    transform: translate(-50%, -50%);
+    writing-mode: vertical-rl;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    color: rgba(255,245,230,0.95);
+    font-size: 20px;
+    letter-spacing: 8px;
+    padding: 12px 4px;
+    border: 1.5px solid rgba(255,245,230,0.55);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.1);
+    z-index: 2;
+  }
 
-.modal-overlay {
-position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-z-index: 100; display: none; align-items: flex-end;
-}
-.modal-overlay.show { display: flex; }
-.modal {
-background: white; width: 100%; max-height: 90vh;
-border-radius: 24px 24px 0 0;
-padding: 20px 20px calc(env(safe-area-inset-bottom) + 20px) 20px;
-overflow-y: auto; -webkit-overflow-scrolling: touch;
-}
-.modal-title {
-font-size: 20px; font-weight: 800; margin-bottom: 16px; color: #ff6b35;
-}
-.form-group { margin-bottom: 14px; }
-.form-label {
-display: block; font-size: 13px; font-weight: 600;
-color: #666; margin-bottom: 6px;
-}
-.import-box {
-background: #fff8f3; border: 1.5px dashed #ffb995;
-border-radius: 12px; padding: 12px; margin-bottom: 16px;
-}
-.import-row { display: flex; gap: 6px; align-items: center; }
-.import-row .form-input { flex: 1; }
-.input-wrap {
-position: relative; flex: 1; display: flex; align-items: center;
-}
-.input-wrap .form-input {
-width: 100%; padding-right: 34px;
-}
-.clear-btn {
-position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-width: 22px; height: 22px; border-radius: 50%;
-border: none; background: #ccc; color: white;
-font-size: 14px; line-height: 1; font-weight: 700;
-cursor: pointer; display: none;
-align-items: center; justify-content: center;
-padding: 0; font-family: inherit;
-}
-.clear-btn.show { display: flex; }
-.clear-btn:active { background: #999; }
-.import-hint {
-font-size: 11px; color: #aaa; margin-top: 6px; line-height: 1.4;
-white-space: pre-line;
-}
-.import-hint.success { color: #10b981; }
-.import-hint.error { color: #ff4757; }
-.import-hint a { color: #ff6b35; text-decoration: underline; font-weight: 600; }
-.add-btn-sec {
-background: #fff1e8 !important;
-color: #ff6b35 !important;
-border: 1.5px solid #ffd0b3 !important;
-padding: 10px 12px !important;
-}
-.form-input, .form-textarea {
-width: 100%; padding: 10px 12px; border: 1.5px solid #eee;
-border-radius: 10px; font-size: 15px; outline: none; font-family: inherit;
-}
-.form-input:focus, .form-textarea:focus { border-color: #ff6b35; }
-.form-textarea { resize: vertical; min-height: 60px; }
-.star-picker {
-display: flex; gap: 4px; font-size: 32px; color: #ddd; cursor: pointer;
-}
-.star-picker span.filled { color: #ffa500; }
-.modal-actions {
-display: flex; gap: 10px; margin-top: 20px;
-}
-.btn {
-flex: 1; padding: 14px; border: none; border-radius: 12px;
-font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
-}
-.btn-primary { background: #ff6b35; color: white; }
-.btn-secondary { background: #f0f0f0; color: #666; }
-.btn-danger { background: #ff4757; color: white; }
+  /* Sticks poking out top */
+  .tube-sticks {
+    position: absolute;
+    top: -2%; left: 50%;
+    transform: translateX(-50%);
+    width: 62%;
+    height: 32%;
+    z-index: 1;
+  }
+  .tube-stick {
+    position: absolute;
+    bottom: 0;
+    width: 7px;
+    background: linear-gradient(90deg, #8a7050 0%, #c9ad78 30%, #f0dcb0 50%, #c9ad78 70%, #8a7050 100%);
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .tube-stick::before {
+    content: '';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 13px; height: 13px;
+    background: radial-gradient(circle at 35% 28%, #ff8a6f, #c84b31 55%, #7a1f10);
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 3px rgba(0,0,0,0.35), 0 2px 3px rgba(0,0,0,0.3);
+  }
+  .omikuji-tube.shaking .tube-stick {
+    animation: stick-shake 0.15s infinite;
+  }
+  .omikuji-tube.shaking .tube-body,
+  .omikuji-tube.shaking .tube-top,
+  .omikuji-tube.shaking .tube-rope {
+    animation: tube-shake 0.12s infinite;
+  }
+  @keyframes stick-shake {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-3px) rotate(-2deg); }
+    75% { transform: translateY(-1px) rotate(2deg); }
+  }
+  @keyframes tube-shake {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    25% { transform: translateX(-3px) rotate(-1.5deg); }
+    75% { transform: translateX(3px) rotate(1.5deg); }
+  }
+  .tube-top, .tube-base { transform-origin: center; }
 
-@media (prefers-color-scheme: dark) {
-html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); color: #eee; }
-.filter-section, .result-card, .store-item, .modal { background: #2a2320; }
-.bottom-nav { background: rgba(42,35,32,0.95); border-color: #3a3028; }
-.chip, .tool-btn { background: #1a1410; border-color: #3a3028; color: #bbb; }
-.tool-btn-danger { color: #ff6b7a; border-color: #5a2028; }
-.import-box { background: #1f1811; border-color: #5a3a28; }
-.add-btn-sec { background: #3a2a1f !important; color: #ffb995 !important; border-color: #5a3a28 !important; }
-.form-input, .form-textarea { background: #1a1410; border-color: #3a3028; color: #eee; }
-.btn-secondary { background: #3a3028; color: #ccc; }
-.store-tag { background: #3a2a1f; }
-.result-info { color: #bbb; }
-.clear-btn { background: #555; }
-.clear-btn:active { background: #777; }
-}
+  /* The chosen stick that falls out */
+  .chosen-stick {
+    position: absolute;
+    left: 50%; top: 35%;
+    transform: translate(-50%, 0) translateY(-20px);
+    width: 46px;
+    height: 190px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 4;
+    transition: all 0.7s cubic-bezier(0.34, 1.3, 0.64, 1);
+  }
+  .chosen-stick.fall {
+    opacity: 1;
+    transform: translate(120%, 35%) rotate(16deg);
+  }
+  .stick-head {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 22px; height: 22px;
+    background: radial-gradient(circle at 35% 30%, #ff8a6f, #c84b31 55%, #7a1f10);
+    border-radius: 50%;
+    box-shadow: inset -3px -3px 4px rgba(0,0,0,0.35), 0 3px 6px rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+  .stick-body {
+    position: absolute;
+    top: 14px; left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 176px;
+    background: linear-gradient(90deg, #a89070 0%, #d9c7a3 30%, #f5eacc 50%, #e8d9b3 70%, #b8a176 100%);
+    border-radius: 3px;
+    box-shadow: inset 0 0 1px rgba(0,0,0,0.2), 0 3px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stick-text {
+    writing-mode: vertical-rl;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: #5a3a1a;
+    letter-spacing: 4px;
+    padding: 10px 0;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  }
+
+  .gacha-stage {
+    position: relative;
+    margin: 10px auto 6px;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-height: 440px;
+    display: flex;
+    justify-content: center;
+  }
+  .gacha-machine {
+    position: relative;
+    width: 78%;
+    height: 100%;
+    cursor: pointer;
+  }
+  .dome {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50% 50% 48% 48% / 54% 54% 46% 46%;
+    background:
+      radial-gradient(ellipse 80% 60% at 35% 25%, rgba(255,255,255,0.9), rgba(255,255,255,0.2) 60%, transparent 75%),
+      linear-gradient(160deg, rgba(200,220,240,0.35), rgba(180,200,220,0.15));
+    border: 2px solid rgba(42,37,32,0.85);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.6),
+      inset -20px -30px 50px rgba(42,37,32,0.08),
+      inset 15px 15px 30px rgba(255,255,255,0.4),
+      0 8px 20px rgba(42,37,32,0.15);
+    overflow: hidden;
+  }
+  .dome::after {
+    content: '';
+    position: absolute;
+    top: 10%; left: 15%;
+    width: 28%; height: 40%;
+    background: linear-gradient(160deg, rgba(255,255,255,0.85), transparent 70%);
+    border-radius: 50%;
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  /* 中央大字 */
+  .dome-word {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 52px;
+    letter-spacing: 2px;
+    color: var(--ink);
+    text-shadow: 0 2px 4px rgba(255,255,255,0.6);
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  /* ========== GACHAPON MACHINE ========== */
+  .capsules {
+    position: absolute;
+    left: 8%; right: 8%;
+    bottom: 6%;
+    height: 55%;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 3px;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .capsules .capsule:nth-child(n+10) { margin-top: -2px; }
+  .gacha-machine.rolling .capsules {
+    opacity: 1;
+    animation: tumble 0.4s infinite;
+  }
+  @keyframes tumble {
+    0%, 100% { transform: rotate(-2deg) translateX(-1px); }
+    50% { transform: rotate(2deg) translateX(1px); }
+  }
+  .capsule {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: inset -2px -2px 3px rgba(0,0,0,0.2), inset 2px 2px 3px rgba(255,255,255,0.4);
+    flex-shrink: 0;
+  }
+  .capsule::after {
+    content: '';
+    position: absolute;
+    top: 8%; left: 15%;
+    width: 35%; height: 25%;
+    background: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    filter: blur(1px);
+  }
+  .gacha-machine.rolling .capsule { animation: bounce-cap 0.5s infinite; }
+  .capsule:nth-child(4n+1) { background: #c84b31; }
+  .capsule:nth-child(4n+2) { background: var(--matcha); }
+  .capsule:nth-child(4n+3) { background: var(--sun); }
+  .capsule:nth-child(4n)   { background: var(--indigo); }
+  .capsule:nth-child(odd)  { animation-delay: 0.1s; }
+  @keyframes bounce-cap {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(0.95); }
+  }
+
+  .body-box {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 88%;
+    height: 38%;
+    background: linear-gradient(180deg, var(--vermilion) 0%, var(--vermilion-dark) 100%);
+    border: 2px solid rgba(42,37,32,0.85);
+    border-radius: 10px 10px 14px 14px;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.2),
+      inset 0 -12px 20px rgba(0,0,0,0.2),
+      0 10px 30px rgba(122,138,75,0.25);
+  }
+  .machine-label {
+    position: absolute;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    color: rgba(255,245,230,0.95);
+    font-size: 15px;
+    letter-spacing: 6px;
+    text-indent: 6px;
+    padding: 3px 14px;
+    border: 1.5px solid rgba(255,245,230,0.6);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.08);
+    white-space: nowrap;
+  }
+  .knob {
+    position: absolute;
+    bottom: 16px; left: 50%;
+    transform: translateX(-50%);
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff5e3, #d4c5a8 60%, #8a7d64);
+    border: 2px solid rgba(42,37,32,0.85);
+    box-shadow: inset 0 0 0 4px rgba(255,255,255,0.1), 0 3px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+  .knob::before, .knob::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 3px; height: 24px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+  .knob::before { transform: translate(-50%, -50%); }
+  .knob::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .gacha-machine.rolling .knob { animation: spin-knob 0.4s linear infinite; }
+  @keyframes spin-knob {
+    from { transform: translateX(-50%) rotate(0); }
+    to { transform: translateX(-50%) rotate(360deg); }
+  }
+  .tray {
+    position: absolute;
+    bottom: 66px; left: 50%;
+    transform: translateX(-50%);
+    width: 62%; height: 22px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 4px 4px 10px 10px;
+    border: 1.5px solid rgba(42,37,32,0.85);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  .winner-capsule {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, 0) scale(0);
+    width: 34%;
+    aspect-ratio: 1;
+    z-index: 4;
+    transition: all 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    display: grid;
+    place-items: center;
+    filter: drop-shadow(0 6px 12px rgba(42,37,32,0.35));
+  }
+  .winner-capsule.pop { transform: translate(-50%, 55%) scale(1); }
+  .winner-capsule .cap-shell {
+    position: absolute; inset: 0;
+  }
+  .winner-capsule .cap-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, #f3d98a, var(--sun));
+    border: 2.5px solid var(--ink);
+    border-bottom: none;
+    border-radius: 50% 50% 0 0;
+    transition: transform 0.4s 0.2s ease;
+    box-shadow: inset 6px 6px 12px rgba(255,255,255,0.4);
+  }
+  .winner-capsule .cap-bot {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(0deg, #e5d6bc, var(--paper));
+    border: 2.5px solid var(--ink);
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    box-shadow: inset 6px -6px 12px rgba(0,0,0,0.06);
+  }
+  .winner-capsule.open .cap-top {
+    transform: translateY(-40%) rotate(-20deg);
+  }
+  .winner-capsule .cap-text {
+    position: relative;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--ink);
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s 0.4s;
+    text-align: center;
+    line-height: 1.1;
+    max-width: 78%;
+    padding: 4px 10px;
+    background: #fffdf7;
+    border-radius: 999px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.08), inset 0 0 0 1px rgba(42,37,32,0.12);
+    letter-spacing: 2px;
+  }
+  .winner-capsule.open .cap-text { opacity: 1; }
+
+  .pick-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 16px 18px;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 8px;
+    text-indent: 8px;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #1a1612, 0 8px 20px rgba(42,37,32,0.25);
+    transition: all 0.1s;
+  }
+  .pick-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #1a1612, 0 3px 10px rgba(42,37,32,0.2);
+  }
+  .pick-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .pick-btn .sub {
+    display: block;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-indent: 3px;
+    color: rgba(242,236,224,0.7);
+    margin-top: 3px;
+  }
+
+  /* ========== RESULT SHEET ========== */
+  .result-sheet {
+    margin-top: 14px;
+    padding: 20px 18px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    display: none;
+    position: relative;
+  }
+  .result-sheet.show { display: block; animation: fadeIn 0.4s ease; }
+  .result-sheet::before {
+    content: '';
+    position: absolute;
+    top: -8px; right: 20px;
+    width: 44px; height: 44px;
+    background: var(--seal);
+    border-radius: 4px;
+    transform: rotate(8deg);
+    opacity: 0.95;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.3);
+  }
+  .result-sheet::after {
+    content: '當';
+    position: absolute;
+    top: -8px; right: 20px;
+    width: 44px; height: 44px;
+    display: grid; place-items: center;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    color: var(--paper);
+    font-size: 22px;
+    transform: rotate(8deg);
+    pointer-events: none;
+  }
+  .result-eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .result-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 10px;
+    padding-right: 50px;
+  }
+  .result-meta {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .result-tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-2);
+  }
+  .result-tag.vermilion {
+    background: rgba(122,138,75,0.1);
+    border-color: rgba(122,138,75,0.3);
+    color: var(--vermilion);
+  }
+  .result-stars { color: var(--sun); font-size: 16px; letter-spacing: 1px; }
+  .result-row {
+    display: flex; gap: 10px;
+    padding: 10px 0;
+    border-top: 1px dashed var(--line);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .result-row .r-label {
+    flex-shrink: 0; width: 48px;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--ink-3); padding-top: 3px;
+    font-weight: 700;
+  }
+  .result-row .r-value a {
+    color: var(--vermilion); text-decoration: none;
+    font-weight: 600; border-bottom: 1px solid rgba(122,138,75,0.3);
+  }
+  .result-actions {
+    display: flex; gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .result-btn {
+    flex: 1;
+    padding: 11px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .result-btn.primary {
+    background: var(--vermilion);
+    color: var(--paper);
+    border-color: var(--vermilion-dark);
+  }
+
+  /* ===== CATEGORY-ONLY RESULT ===== */
+  .cat-result {
+    margin-top: 14px;
+    padding: 28px 20px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    text-align: center;
+    display: none;
+    box-shadow: var(--shadow);
+  }
+  .cat-result.show { display: block; animation: fadeIn 0.4s ease; }
+  .cat-result .eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--ink-3);
+    margin-bottom: 10px;
+  }
+  .cat-result .big-cat {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: 6px;
+    margin-bottom: 8px;
+  }
+  .cat-result .sub-line {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-bottom: 18px;
+  }
+  .cat-result .count-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(122,138,75,0.1);
+    color: var(--vermilion);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .cat-result-actions {
+    display: flex; gap: 8px;
+  }
+  .cat-result-actions .result-btn { flex: 1; }
+
+  /* matched store list inside cat result */
+  .cat-match-list {
+    text-align: left;
+    margin: 4px 0 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 8px;
+    padding-right: 2px;
+  }
+  .cat-match-card {
+    display: flex; gap: 10px;
+    padding: 10px 12px 10px 14px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.12s, border-color 0.12s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-match-card:hover { transform: translateX(2px); border-color: var(--line-strong); }
+  .cat-match-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10px; bottom: 10px;
+    width: 3px;
+    background: var(--cat-color, var(--matcha));
+    border-radius: 0 2px 2px 0;
+  }
+  .cm-num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 16px; font-weight: 900;
+    color: var(--ink-4);
+    min-width: 22px;
+    padding-top: 1px;
+    line-height: 1.1;
+  }
+  .cm-body { flex: 1; min-width: 0; }
+  .cm-top {
+    display: flex; align-items: baseline;
+    justify-content: space-between; gap: 8px;
+    margin-bottom: 2px;
+  }
+  .cm-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cm-stars { color: var(--sun); font-size: 11px; letter-spacing: 1px; flex-shrink: 0; }
+  .cm-meta {
+    display: flex; gap: 6px; align-items: center;
+    font-size: 11px; color: var(--ink-3);
+  }
+  .cm-dot { width: 2.5px; height: 2.5px; border-radius: 50%; background: var(--ink-4); }
+  .cat-empty {
+    margin: 4px 0 16px;
+    padding: 20px 14px;
+    text-align: center;
+    background: #fbf6eb;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    color: var(--ink-2);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  /* ========== LIST PAGE ========== */
+  .list-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .list-head h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px; font-weight: 900;
+    letter-spacing: 4px;
+  }
+  .list-count {
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 2px; margin-top: 2px;
+  }
+  .add-btn {
+    padding: 9px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+  .tool-row {
+    display: flex; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .tool-btn {
+    flex: 1;
+    padding: 8px 6px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--ink-2);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .tool-btn.danger { color: #c84b31; border-color: rgba(200,75,49,0.3); }
+  .store-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .store-card:hover { border-color: var(--line-strong); transform: translateX(2px); }
+  .store-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 14px; bottom: 14px;
+    width: 3px;
+    background: var(--cat-color, var(--matcha));
+    border-radius: 0 2px 2px 0;
+  }
+  .store-num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px; font-weight: 900;
+    color: var(--ink-4);
+    line-height: 1;
+    min-width: 28px;
+    padding-top: 2px;
+  }
+  .store-body { flex: 1; min-width: 0; }
+  .store-top {
+    display: flex; align-items: baseline;
+    justify-content: space-between; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .store-name-txt {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px; font-weight: 700;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .store-stars-txt { color: var(--sun); font-size: 12px; letter-spacing: 1px; flex-shrink: 0; }
+  .store-meta-row {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    font-size: 11px; color: var(--ink-3);
+  }
+  .store-meta-row .dot { width: 2.5px; height: 2.5px; border-radius: 50%; background: var(--ink-4); }
+  .store-cat-tag {
+    padding: 2px 7px;
+    background: var(--paper-2);
+    border-radius: 10px;
+    font-size: 10.5px;
+    color: var(--ink-2);
+    font-weight: 600;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px 30px;
+    color: var(--ink-3);
+  }
+  .empty-state .glyph {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 72px;
+    color: var(--ink-4);
+    opacity: 0.4;
+    margin-bottom: 16px;
+    font-weight: 900;
+  }
+  .empty-state .msg { font-size: 14px; line-height: 1.7; }
+
+  /* ========== BOTTOM NAV (3 items) ========== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    max-width: 440px;
+    margin: 0 auto;
+    display: flex;
+    background: rgba(242,236,224,0.92);
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    border-top: 1px solid var(--line);
+    padding: 8px 20px calc(env(safe-area-inset-bottom) + 8px);
+    z-index: 20;
+  }
+  .nav-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 11px;
+    color: var(--ink-3);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .nav-btn .nav-glyph {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 900;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .nav-btn.active { color: var(--ink); }
+  .nav-btn.active .nav-glyph {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ========== MODAL ========== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(42,37,32,0.45);
+    backdrop-filter: blur(3px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+  .modal {
+    background: var(--paper);
+    width: 100%;
+    max-width: 440px;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(env(safe-area-inset-bottom) + 20px);
+    overflow-y: auto;
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-grip {
+    width: 36px; height: 4px;
+    background: var(--line-strong);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .modal-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px; font-weight: 900;
+    margin-bottom: 16px;
+    letter-spacing: 4px;
+  }
+  .import-box {
+    background: linear-gradient(180deg, #fff8ea, #fdf1d9);
+    border: 1px dashed rgba(122,138,75,0.4);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  .import-box .form-label { color: var(--vermilion); margin-bottom: 8px; }
+  .import-row { display: flex; gap: 6px; }
+  .input-wrap { position: relative; flex: 1; }
+  .input-wrap .form-input { padding-right: 32px; }
+  .clear-btn {
+    position: absolute; right: 6px; top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: var(--ink-4);
+    color: var(--paper);
+    font-size: 12px; line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+  }
+  .clear-btn.show { display: flex; }
+  .mini-btn {
+    padding: 0 12px;
+    background: var(--vermilion);
+    color: var(--paper);
+    border: 1px solid var(--vermilion-dark);
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .import-hint {
+    font-size: 11px; color: var(--ink-3);
+    margin-top: 8px; line-height: 1.5;
+  }
+  .import-hint.success { color: var(--matcha); }
+  .import-hint.error { color: #c84b31; }
+  .form-group { margin-bottom: 14px; }
+  .form-label {
+    display: block;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--ink-3); margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .form-input, .form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: #fffaf0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--vermilion);
+    background: #fff;
+  }
+  .form-textarea { min-height: 70px; resize: vertical; }
+  .row-with-btn { display: flex; gap: 6px; }
+  .row-with-btn .form-input { flex: 1; }
+  .row-with-btn .mini-btn { padding: 0 14px; background: var(--paper-2); color: var(--ink); border-color: var(--line); }
+  .star-picker {
+    display: flex; gap: 4px;
+    font-size: 32px;
+    color: var(--ink-4);
+    cursor: pointer;
+  }
+  .star-picker span.filled { color: var(--sun); }
+  .modal-actions {
+    display: flex; gap: 10px;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .btn {
+    flex: 1;
+    padding: 13px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px; font-weight: 900;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-indent: 3px;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-secondary { background: transparent; color: var(--ink); }
+  .btn-danger { background: #c84b31; color: var(--paper); border-color: #9e3620; }
+
+  .toast {
+    position: fixed;
+    bottom: 110px; left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 10px;
+    font-size: 13px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* category colors */
+  .cat-中式 { --cat-color: #c84b31; }
+  .cat-日式 { --cat-color: #8b6c8a; }
+  .cat-韓式 { --cat-color: #c4692e; }
+  .cat-美式 { --cat-color: #9e5a3c; }
+  .cat-西式 { --cat-color: var(--indigo); }
+  .cat-義式 { --cat-color: #b8342a; }
+  .cat-越式 { --cat-color: var(--matcha); }
+  .cat-泰式 { --cat-color: #d9a441; }
+  .cat-港式 { --cat-color: #b85a3c; }
+  .cat-麵食 { --cat-color: #8a7a5a; }
+  .cat-小吃 { --cat-color: var(--matcha); }
+  .cat-火鍋 { --cat-color: #b8342a; }
+  .cat-燒烤 { --cat-color: #6b4423; }
+  .cat-飲料 { --cat-color: #a86b8f; }
+  .cat-甜點 { --cat-color: #d68ca5; }
+  .cat-速食 { --cat-color: var(--sun); }
+  .cat-早餐店 { --cat-color: #d9a441; }
+  .cat-其他 { --cat-color: var(--ink-3); }
 </style>
-
 </head>
 <body>
-  <header><h1>吃什麼？</h1></header>
 
-  <div class="page active" id="pickPage">
-    <div class="filter-section">
-      <div class="filter-label">餐別</div>
-      <div class="chip-group" id="mealChips">
-        <button class="chip active" data-meal="all">全部</button>
-        <button class="chip" data-meal="breakfast">早餐</button>
-        <button class="chip" data-meal="lunch">午餐</button>
-        <button class="chip" data-meal="teatime">下午茶</button>
-        <button class="chip" data-meal="dinner">晚餐</button>
-        <button class="chip" data-meal="latenight">宵夜</button>
-      </div>
-      <div class="filter-label">種類</div>
-      <div class="chip-group" id="categoryChips"></div>
+<header>
+  <div class="brand">
+    <div class="seal">食</div>
+    <div class="brand-text">
+      <div class="brand-title">吃什麼</div>
+      <div class="brand-sub">WHAT · TO · EAT</div>
     </div>
+  </div>
+  <div class="time-badge">
+    <span class="dot"></span>
+    <span id="timeLabel">正午 · 午餐時段</span>
+  </div>
+</header>
 
-```
-<div class="result-card" id="resultCard">
-  <div class="result-empty" id="resultEmpty">按下方按鈕隨機抽一家</div>
-  <div id="resultContent" style="display:none;"></div>
+<!-- ============ PICK PAGE (抽店家) ============ -->
+<div class="page active" id="pickPage">
+  <div class="hint-row">
+    <span class="hint-label">今</span>
+    <span>現在是<b id="mealHint">午餐</b>時段，已自動推薦 · 也可以手動挑</span>
+  </div>
+
+  <div class="filter-card">
+    <div class="filter-title">
+      <span class="label">餐別</span>
+      <span class="auto" id="autoTag">● 自動</span>
+    </div>
+    <div class="chip-row" id="mealChips">
+      <button class="chip" data-meal="all">全部</button>
+      <button class="chip" data-meal="breakfast">早餐</button>
+      <button class="chip" data-meal="lunch">午餐</button>
+      <button class="chip" data-meal="teatime">下午茶</button>
+      <button class="chip" data-meal="dinner">晚餐</button>
+      <button class="chip" data-meal="latenight">宵夜</button>
+    </div>
+    <div class="chip-row divider" style="margin-bottom: 6px;">
+      <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span class="label" style="font-size: 11px; letter-spacing: 2px; color: var(--ink-3); font-weight: 700;">種類</span>
+        <span class="multi-note" style="font-size: 10px; color: var(--ink-3); font-weight: 500;">可多選 · 任一符合即可</span>
+      </div>
+    </div>
+    <div class="chip-row" id="categoryChips"></div>
+    <div class="chip-row divider" style="margin-bottom: 6px;">
+      <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span class="label" style="font-size: 11px; letter-spacing: 2px; color: var(--ink-3); font-weight: 700;">價格</span>
+        <span class="multi-note" style="font-size: 10px; color: var(--ink-3); font-weight: 500;">可多選 · 不選 = 不限</span>
+      </div>
+    </div>
+    <div class="chip-row" id="priceChips"></div>
+  </div>
+
+  <div class="gacha-stage" id="pickStage">
+    <div class="omikuji-tube" id="omikujiTube">
+      <div class="tube-sticks" id="tubeSticks"></div>
+      <div class="tube-body"></div>
+      <div class="tube-top"></div>
+      <div class="tube-mouth"></div>
+      <div class="tube-rope"></div>
+      <div class="tube-label">吃什麼</div>
+      <div class="chosen-stick" id="chosenStick">
+        <div class="stick-head"></div>
+        <div class="stick-body">
+          <span class="stick-text" id="stickText">吉</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="pick-btn" id="pickBtn">
+    搖一支
+    <span class="sub">SHAKE THE TUBE</span>
+  </button>
+
+  <div class="result-sheet" id="resultSheet"></div>
 </div>
 
-<button class="pick-btn" id="pickBtn">🎲 隨機抽一家</button>
-```
-
+<!-- ============ CATEGORY PAGE (抽種類) ============ -->
+<div class="page" id="catPage">
+  <div class="hint-row">
+    <span class="hint-label">方</span>
+    <span>只想決定大方向 · 不細分到店家</span>
   </div>
 
-  <div class="page" id="listPage">
-    <div class="data-tools">
-      <button class="tool-btn" id="exportBtn">📤 匯出</button>
-      <button class="tool-btn" id="importBtn">📥 匯入</button>
-      <button class="tool-btn tool-btn-danger" id="clearBtn">🗑 清空</button>
-      <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+  <div class="filter-card">
+    <div class="filter-title">
+      <span class="label">限定種類（可複選）</span>
+      <span class="multi-note">不選 = 全部</span>
     </div>
-    <div class="list-header">
-      <span class="store-count" id="storeCount">共 0 家</span>
-      <button class="add-store-btn" id="addStoreBtn">＋ 新增店家</button>
-    </div>
-    <div id="storeList"></div>
+    <div class="chip-row" id="catPoolChips"></div>
   </div>
 
-  <nav class="bottom-nav">
-    <button class="nav-btn active" data-page="pickPage">
-      <span class="nav-icon">🎲</span>抽店家
-    </button>
-    <button class="nav-btn" data-page="listPage">
-      <span class="nav-icon">📋</span>我的名單
-    </button>
-  </nav>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-title" id="modalTitle">新增店家</div>
-
-```
-  <div class="import-box" id="importBox">
-    <div class="form-label">📎 從連結或地址文字匯入</div>
-    <div class="import-row">
-      <div class="input-wrap">
-        <input type="text" class="form-input" id="fImportUrl" placeholder="貼上 Google Maps 連結 或 地址文字…" inputmode="url">
-        <button class="clear-btn" id="importClearBtn" type="button" aria-label="清除" title="清除">×</button>
+  <div class="gacha-stage">
+    <div class="gacha-machine" id="catMachine">
+      <div class="dome">
+        <div class="capsules" id="catCapsules"></div>
       </div>
-      <button class="add-btn" id="importParseBtn" type="button">解析</button>
+      <div class="body-box">
+        <div class="machine-label">決 方 向</div>
+        <div class="tray"></div>
+        <div class="knob" id="catKnob"></div>
+      </div>
+      <div class="winner-capsule" id="catWinnerCap">
+        <div class="cap-shell">
+          <div class="cap-top"></div>
+          <div class="cap-bot"></div>
+        </div>
+        <div class="cap-text" id="catCapText">中</div>
+      </div>
     </div>
-    <div class="import-hint" id="importHint">支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字</div>
   </div>
 
-  <div class="form-group">
-    <label class="form-label">店名 *</label>
-    <div class="import-row">
-      <input type="text" class="form-input" id="fName" maxlength="30">
-      <button class="add-btn add-btn-sec" id="searchGoogleBtn" type="button" title="用 Google Maps 搜尋此店">🔍</button>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="form-label">餐別（可複選）</label>
-    <div class="chip-group" id="fMealChips">
-      <button class="chip" data-v="breakfast">早餐</button>
-      <button class="chip" data-v="lunch">午餐</button>
-      <button class="chip" data-v="teatime">下午茶</button>
-      <button class="chip" data-v="dinner">晚餐</button>
-      <button class="chip" data-v="latenight">宵夜</button>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="form-label">種類</label>
-    <div class="chip-group" id="fCatChips"></div>
-  </div>
-  <div class="form-group">
-    <label class="form-label">評分</label>
-    <div class="star-picker" id="fStars">
-      <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="form-label">地址</label>
-    <input type="text" class="form-input" id="fAddr" placeholder="例：台北市信義區松壽路 12 號">
-  </div>
-  <div class="form-group">
-    <label class="form-label">營業時間</label>
-    <input type="text" class="form-input" id="fHours" placeholder="例：11:00-14:00, 17:00-21:00 / 週一公休">
-  </div>
-  <div class="form-group">
-    <label class="form-label">備註</label>
-    <textarea class="form-textarea" id="fNote" placeholder="例：招牌牛肉麵、需訂位"></textarea>
-  </div>
-  <div class="modal-actions" id="modalActions"></div>
+  <button class="pick-btn" id="catPickBtn">
+    決定方向
+    <span class="sub">PICK A CATEGORY</span>
+  </button>
+
+  <div class="cat-result" id="catResultSheet"></div>
 </div>
-```
 
+<!-- ============ LIST PAGE ============ -->
+<div class="page" id="listPage">
+  <div class="list-head">
+    <div>
+      <h2>名單</h2>
+      <div class="list-count" id="storeCount">共 0 家 · MY LIST</div>
+    </div>
+    <button class="add-btn" id="addStoreBtn">＋ 新增</button>
   </div>
+  <div class="tool-row">
+    <button class="tool-btn" id="exportBtn">匯出備份</button>
+    <button class="tool-btn" id="importBtn">匯入檔案</button>
+    <button class="tool-btn danger" id="clearBtn">清空全部</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+  </div>
+  <div id="storeList"></div>
+</div>
+
+<!-- ============ BOTTOM NAV (3 tabs) ============ -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-page="pickPage">
+    <span class="nav-glyph">抽</span>
+    <span>抽店家</span>
+  </button>
+  <button class="nav-btn" data-page="catPage">
+    <span class="nav-glyph">方</span>
+    <span>抽方向</span>
+  </button>
+  <button class="nav-btn" data-page="listPage">
+    <span class="nav-glyph">單</span>
+    <span>我的名單</span>
+  </button>
+</nav>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-grip"></div>
+    <div class="modal-title" id="modalTitle">新增店家</div>
+
+    <div class="import-box" id="importBox">
+      <label class="form-label">從連結 / 地址快速匯入</label>
+      <div class="import-row">
+        <div class="input-wrap">
+          <input type="text" class="form-input" id="fImportUrl" placeholder="貼 Google Maps 連結或地址文字…">
+          <button class="clear-btn" id="importClearBtn" type="button">×</button>
+        </div>
+        <button class="mini-btn" id="importParseBtn" type="button">解析</button>
+      </div>
+      <div class="import-hint" id="importHint">支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">店名 *</label>
+      <div class="row-with-btn">
+        <input type="text" class="form-input" id="fName" maxlength="30">
+        <button class="mini-btn" id="searchGoogleBtn" type="button" title="Google Maps 搜尋">🔍</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">餐別（可複選）</label>
+      <div class="chip-row" id="fMealChips">
+        <button class="chip" data-v="breakfast">早餐</button>
+        <button class="chip" data-v="lunch">午餐</button>
+        <button class="chip" data-v="teatime">下午茶</button>
+        <button class="chip" data-v="dinner">晚餐</button>
+        <button class="chip" data-v="latenight">宵夜</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">種類（可複選 · 任一符合）</label>
+      <div class="chip-row" id="fCatChips"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">價格區間（可複選）</label>
+      <div class="chip-row" id="fPriceChips"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">評分</label>
+      <div class="star-picker" id="fStars">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">地址</label>
+      <input type="text" class="form-input" id="fAddr" placeholder="例：台北市信義區松壽路 12 號">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">營業時間</label>
+      <input type="text" class="form-input" id="fHours" placeholder="例：11:00-14:00, 17:00-21:00 / 週一公休">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">備註</label>
+      <textarea class="form-textarea" id="fNote" placeholder="招牌菜、價位、是否訂位…"></textarea>
+    </div>
+
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-  const CATEGORIES = ['中式','日式','韓式','西式','美式','速食','早餐店','麵食','小吃','火鍋','燒烤','飲料甜點','其他'];
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "accent": "#7a8a4b",
+    "grain": 65,
+    "font": "sans"
+  }/*EDITMODE-END*/;
+
+  // Main categories — 大方向為主（含國家）
+  const CATEGORIES = ['中式','日式','韓式','美式','西式','義式','越式','泰式','港式','麵食','小吃','火鍋','燒烤','飲料','甜點','速食','早餐店','其他'];
   const MEAL_LABELS = { breakfast:'早餐', lunch:'午餐', teatime:'下午茶', dinner:'晚餐', latenight:'宵夜' };
+  // Price buckets — each 500 unit; 3000+ shares last bucket
+  const PRICE_BUCKETS = [
+    { id:'p1', label:'≲ 500',      min: 0,    max: 500  },
+    { id:'p2', label:'500 – 1000', min: 500,  max: 1000 },
+    { id:'p3', label:'1000 – 1500', min: 1000, max: 1500 },
+    { id:'p4', label:'1500 – 2000', min: 1500, max: 2000 },
+    { id:'p5', label:'2000 – 2500', min: 2000, max: 2500 },
+    { id:'p6', label:'2500 – 3000', min: 2500, max: 3000 },
+    { id:'p7', label:'3000+',        min: 3000, max: Infinity }
+  ];
+  const PRICE_LABEL = Object.fromEntries(PRICE_BUCKETS.map(b => [b.id, b.label]));
+
+  const SAMPLE = [
+    { id:'s1', name:'鼎泰豐 信義店', meals:['lunch','dinner'], categories:['中式'], stars:5, address:'台北市信義區松高路11號', hours:'11:00-21:00', note:'招牌小籠包、需排隊' },
+    { id:'s2', name:'一蘭拉麵 西門町', meals:['lunch','dinner','latenight'], categories:['日式','麵食'], stars:4, address:'台北市萬華區武昌街二段36號', hours:'24 小時', note:'深夜也能吃' },
+    { id:'s3', name:'阜杭豆漿', meals:['breakfast'], categories:['早餐店','中式'], stars:5, address:'台北市中正區忠孝東路一段108號2樓', hours:'05:30-12:30 / 週一公休', note:'厚餅夾蛋必點' },
+    { id:'s4', name:'春水堂 南西店', meals:['teatime','lunch'], categories:['飲料'], stars:4, address:'台北市中山區南京西路12號', hours:'10:30-22:00' },
+    { id:'s5', name:'燒肉 Like', meals:['lunch','dinner'], categories:['燒烤','日式'], stars:3, address:'台北市大安區忠孝東路四段181巷40弄20號', hours:'11:00-22:00' },
+    { id:'s6', name:'鍋爸火鍋', meals:['dinner'], categories:['火鍋'], stars:4, address:'新北市板橋區文化路一段', hours:'17:00-02:00', note:'吃到飽、團體聚餐' },
+    { id:'s7', name:'Pho 24 越南河粉', meals:['lunch','dinner'], categories:['越式','麵食'], stars:4, address:'台北市信義區松壽路9號', hours:'11:00-22:00' },
+    { id:'s8', name:'泰市場', meals:['lunch','dinner'], categories:['泰式'], stars:4, address:'台北市信義區松壽路11號 B2', hours:'11:30-22:00' },
+    { id:'s9', name:'路邊攤滷肉飯', meals:['lunch','dinner','latenight'], categories:['小吃','中式'], stars:5, address:'台北市大同區延三夜市', hours:'17:00-02:00', note:'銅板價、必加蛋' },
+  ];
 
   let stores = loadStores();
-  let filter = { meal: 'all', category: 'all' };
+  let filter = { meal: 'all', categories: [], prices: [] };
+  let catFilter = { categories: [] };
   let editingId = null;
-  let formState = { meals: [], category: '', stars: 0 };
+  let formState = { meals: [], categories: [], stars: 0, prices: [], lat: null, lng: null };
 
   function loadStores() {
-    try { return JSON.parse(localStorage.getItem('wte_stores') || '[]'); }
-    catch(e) { return []; }
+    try {
+      const saved = JSON.parse(localStorage.getItem('wte_stores') || 'null');
+      if (saved && Array.isArray(saved) && saved.length) {
+        // Migrate old single-category schema to categories[]
+        return saved.map(s => ({
+          ...s,
+          categories: s.categories || (s.category ? [s.category] : [])
+        }));
+      }
+    } catch(e) {}
+    return [...SAMPLE];
   }
-  function saveStores() {
-    localStorage.setItem('wte_stores', JSON.stringify(stores));
-  }
+  function saveStores() { localStorage.setItem('wte_stores', JSON.stringify(stores)); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
   function esc(s) { return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
   function renderStars(n) { return '★'.repeat(n) + '☆'.repeat(5-n); }
+  function firstCat(s) { return (s.categories && s.categories[0]) || s.category || '其他'; }
+  function allCats(s) { return s.categories || (s.category ? [s.category] : []); }
 
+  // ========== TIME-BASED ==========
+  function getRecommendedMeal() {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 10) return { meal: 'breakfast', label: '早餐', time: '清晨' };
+    if (h >= 10 && h < 14) return { meal: 'lunch', label: '午餐', time: '正午' };
+    if (h >= 14 && h < 17) return { meal: 'teatime', label: '下午茶', time: '午後' };
+    if (h >= 17 && h < 21) return { meal: 'dinner', label: '晚餐', time: '黃昏' };
+    return { meal: 'latenight', label: '宵夜', time: '深夜' };
+  }
+  function applyRecommendation() {
+    const rec = getRecommendedMeal();
+    document.getElementById('timeLabel').textContent = `${rec.time} · ${rec.label}時段`;
+    document.getElementById('mealHint').textContent = rec.label;
+    filter.meal = rec.meal;
+    document.querySelectorAll('#mealChips .chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.meal === rec.meal);
+      c.classList.toggle('recommend', c.dataset.meal === rec.meal);
+    });
+  }
+
+  // ========== NAV ==========
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -381,111 +1617,340 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
       btn.classList.add('active');
       document.getElementById(btn.dataset.page).classList.add('active');
       if (btn.dataset.page === 'listPage') renderStoreList();
+      window.scrollTo({ top: 0, behavior: 'instant' });
     });
   });
 
-  function renderCategoryChips() {
-    const container = document.getElementById('categoryChips');
-    container.innerHTML = '<button class="chip active" data-cat="all">全部</button>' +
-      CATEGORIES.map(c => `<button class="chip" data-cat="${c}">${c}</button>`).join('');
-    container.querySelectorAll('.chip').forEach(chip => {
+  // ========== CAPSULE + STICK RENDER ==========
+  function renderCapsules(elId) {
+    const c = document.getElementById(elId);
+    if (!c) return;
+    c.innerHTML = Array(14).fill(0).map(() => '<div class="capsule"></div>').join('');
+  }
+  renderCapsules('catCapsules');
+
+  (function renderTubeSticks() {
+    const c = document.getElementById('tubeSticks');
+    if (!c) return;
+    const n = 5;
+    c.innerHTML = Array(n).fill(0).map((_, i) => {
+      const left = 10 + i * (80 / (n - 1));
+      const h = 60 + Math.random() * 35;
+      const rot = (Math.random() * 10 - 5).toFixed(1);
+      return `<div class="tube-stick" style="left:${left}%;height:${h}%;transform:rotate(${rot}deg);"></div>`;
+    }).join('');
+  })();
+
+  // ========== CATEGORY CHIPS (pick page - multi select) ==========
+  function renderPickCategoryChips() {
+    const c = document.getElementById('categoryChips');
+    c.innerHTML = `<button class="chip accent active" data-cat="__all__">全部</button>` +
+      CATEGORIES.map(cat => `<button class="chip accent" data-cat="${cat}">${cat}</button>`).join('');
+    c.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        filter.category = chip.dataset.cat;
+        const v = chip.dataset.cat;
+        if (v === '__all__') {
+          c.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+          chip.classList.add('active');
+          filter.categories = [];
+        } else {
+          c.querySelector('[data-cat="__all__"]').classList.remove('active');
+          chip.classList.toggle('active');
+          if (chip.classList.contains('active')) {
+            if (!filter.categories.includes(v)) filter.categories.push(v);
+          } else {
+            filter.categories = filter.categories.filter(x => x !== v);
+          }
+          if (filter.categories.length === 0) {
+            c.querySelector('[data-cat="__all__"]').classList.add('active');
+          }
+        }
       });
     });
   }
-  renderCategoryChips();
+  renderPickCategoryChips();
 
+  // ========== PRICE CHIPS (pick page - multi select) ==========
+  function renderPickPriceChips() {
+    const c = document.getElementById('priceChips');
+    c.innerHTML = `<button class="chip accent active" data-price="__all__">不限</button>` +
+      PRICE_BUCKETS.map(b => `<button class="chip accent" data-price="${b.id}">${b.label}</button>`).join('');
+    c.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const v = chip.dataset.price;
+        if (v === '__all__') {
+          c.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+          chip.classList.add('active');
+          filter.prices = [];
+        } else {
+          c.querySelector('[data-price="__all__"]').classList.remove('active');
+          chip.classList.toggle('active');
+          if (chip.classList.contains('active')) {
+            if (!filter.prices.includes(v)) filter.prices.push(v);
+          } else {
+            filter.prices = filter.prices.filter(x => x !== v);
+          }
+          if (filter.prices.length === 0) {
+            c.querySelector('[data-price="__all__"]').classList.add('active');
+          }
+        }
+      });
+    });
+  }
+  renderPickPriceChips();
+
+  // ========== CATEGORY POOL CHIPS (cat page) ==========
+  function renderCatPoolChips() {
+    const c = document.getElementById('catPoolChips');
+    c.innerHTML = CATEGORIES.map(cat => `<button class="chip accent" data-cat="${cat}">${cat}</button>`).join('');
+    c.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const v = chip.dataset.cat;
+        chip.classList.toggle('active');
+        if (chip.classList.contains('active')) {
+          if (!catFilter.categories.includes(v)) catFilter.categories.push(v);
+        } else {
+          catFilter.categories = catFilter.categories.filter(x => x !== v);
+        }
+      });
+    });
+  }
+  renderCatPoolChips();
+
+  // ========== MEAL CHIPS ==========
   document.getElementById('mealChips').querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      document.getElementById('mealChips').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      document.getElementById('mealChips').querySelectorAll('.chip').forEach(c => {
+        c.classList.remove('active');
+        c.classList.remove('recommend');
+      });
       chip.classList.add('active');
       filter.meal = chip.dataset.meal;
+      document.getElementById('autoTag').style.opacity = '0.4';
     });
   });
 
-  document.getElementById('pickBtn').addEventListener('click', () => {
+  // ========== PICK STORE (扭蛋 · 抽店家) ==========
+  document.getElementById('pickBtn').addEventListener('click', pickStore);
+  document.getElementById('omikujiTube').addEventListener('click', pickStore);
+
+  function pickStore() {
     const pool = stores.filter(s => {
       if (filter.meal !== 'all' && !(s.meals || []).includes(filter.meal)) return false;
-      if (filter.category !== 'all' && s.category !== filter.category) return false;
+      if (filter.categories.length > 0) {
+        const cats = allCats(s);
+        if (!filter.categories.some(c => cats.includes(c))) return false;
+      }
+      if (filter.prices.length > 0) {
+        const sp = s.prices || [];
+        if (!filter.prices.some(p => sp.includes(p))) return false;
+      }
       return true;
     });
     if (pool.length === 0) {
-      showResultEmpty('沒有符合條件的店家 😢\n去「我的名單」新增看看');
+      showToast('沒有符合條件的店家 · 去名單新增吧');
       return;
     }
     const btn = document.getElementById('pickBtn');
+    const tube = document.getElementById('omikujiTube');
+    const stick = document.getElementById('chosenStick');
     btn.disabled = true;
-    document.getElementById('resultEmpty').style.display = 'none';
-    document.getElementById('resultContent').style.display = 'block';
-    let count = 0;
-    const total = pool.length > 1 ? 16 : 1;
-    const interval = setInterval(() => {
-      const pick = pool[Math.floor(Math.random()*pool.length)];
-      renderResult(pick, count < total-1);
-      count++;
-      if (count >= total) {
-        clearInterval(interval);
+    stick.classList.remove('fall');
+    document.getElementById('resultSheet').classList.remove('show');
+
+    tube.classList.add('shaking');
+    if (navigator.vibrate) navigator.vibrate(20);
+
+    setTimeout(() => {
+      tube.classList.remove('shaking');
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      document.getElementById('stickText').textContent = (pick.name || '吉').slice(0, 5);
+      void stick.offsetWidth;
+      stick.classList.add('fall');
+      if (navigator.vibrate) navigator.vibrate([40, 80, 40]);
+
+      setTimeout(() => {
+        renderStoreResult(pick);
         btn.disabled = false;
-        if (navigator.vibrate) navigator.vibrate(30);
-      }
-    }, 70);
-  });
-
-  function showResultEmpty(msg) {
-    const e = document.getElementById('resultEmpty');
-    e.style.display = 'block';
-    e.textContent = msg;
-    document.getElementById('resultContent').style.display = 'none';
+        scrollToEl('resultSheet', 200);
+      }, 500);
+    }, 1400);
   }
 
-  function renderResult(s, rolling) {
+  function renderStoreResult(s) {
     let mapUrl = '';
-    if (s.lat && s.lng) {
-      mapUrl = `https://maps.apple.com/?ll=${s.lat},${s.lng}&q=${encodeURIComponent(s.name)}`;
-    } else if (s.address) {
-      mapUrl = `https://maps.apple.com/?q=${encodeURIComponent(s.address)}`;
-    }
-    const mealText = (s.meals||[]).map(m=>MEAL_LABELS[m]).join('、') || '—';
-    document.getElementById('resultContent').innerHTML = `
-      <div class="result-name ${rolling?'rolling':''}">${esc(s.name)}</div>
-      <div class="result-stars">${renderStars(s.stars||0)}</div>
-      <div class="result-info"><span class="icon">🍽️</span><span class="text">${esc(s.category||'未分類')} · ${mealText}</span></div>
-      ${mapUrl && s.address ? `<div class="result-info"><span class="icon">📍</span><span class="text"><a href="${mapUrl}" target="_blank">${esc(s.address)}</a></span></div>` : (mapUrl ? `<div class="result-info"><span class="icon">📍</span><span class="text"><a href="${mapUrl}" target="_blank">開啟地圖</a></span></div>` : '')}
-      ${s.hours ? `<div class="result-info"><span class="icon">🕐</span><span class="text">${esc(s.hours)}</span></div>` : ''}
-      ${s.note ? `<div class="result-info"><span class="icon">📝</span><span class="text">${esc(s.note)}</span></div>` : ''}
+    if (s.lat && s.lng) mapUrl = `https://maps.apple.com/?ll=${s.lat},${s.lng}&q=${encodeURIComponent(s.name)}`;
+    else if (s.address) mapUrl = `https://maps.apple.com/?q=${encodeURIComponent(s.address)}`;
+    const mealText = (s.meals||[]).map(m => MEAL_LABELS[m]).join(' · ') || '—';
+    const catText = allCats(s).join(' · ') || '未分類';
+    const priceText = (s.prices||[]).map(p => PRICE_LABEL[p]).filter(Boolean).join(' / ');
+    const sheet = document.getElementById('resultSheet');
+    sheet.innerHTML = `
+      <div class="result-eyebrow">ANSWER · 今 天 的 答 案</div>
+      <div class="result-name">${esc(s.name)}</div>
+      <div class="result-meta">
+        <span class="result-tag vermilion">${esc(catText)}</span>
+        <span class="result-tag">${esc(mealText)}</span>
+        ${priceText ? `<span class="result-tag">＄ ${esc(priceText)}</span>` : ''}
+        <span class="result-tag result-stars">${renderStars(s.stars||0)}</span>
+      </div>
+      ${s.address ? `<div class="result-row"><span class="r-label">地址</span><span class="r-value">${mapUrl ? `<a href="${mapUrl}" target="_blank">${esc(s.address)}</a>` : esc(s.address)}</span></div>` : ''}
+      ${s.hours ? `<div class="result-row"><span class="r-label">時間</span><span class="r-value">${esc(s.hours)}</span></div>` : ''}
+      ${s.note ? `<div class="result-row"><span class="r-label">備註</span><span class="r-value">${esc(s.note)}</span></div>` : ''}
+      <div class="result-actions">
+        <button class="result-btn" onclick="pickStore()">再抽一次</button>
+        ${mapUrl ? `<button class="result-btn primary" onclick="window.open('${mapUrl}','_blank')">開啟導航</button>` : ''}
+      </div>
     `;
+    sheet.classList.add('show');
   }
 
+  // ========== PICK CATEGORY (扭蛋 · 抽方向) ==========
+  document.getElementById('catPickBtn').addEventListener('click', pickCategory);
+  document.getElementById('catMachine').addEventListener('click', pickCategory);
+  document.getElementById('catKnob').addEventListener('click', (e) => { e.stopPropagation(); pickCategory(); });
+
+  function pickCategory() {
+    const pool = catFilter.categories.length > 0 ? catFilter.categories : CATEGORIES;
+    if (pool.length === 0) return;
+
+    const btn = document.getElementById('catPickBtn');
+    const machine = document.getElementById('catMachine');
+    const winnerCap = document.getElementById('catWinnerCap');
+    btn.disabled = true;
+    winnerCap.classList.remove('pop', 'open');
+    document.getElementById('catResultSheet').classList.remove('show');
+
+    machine.classList.add('rolling');
+    if (navigator.vibrate) navigator.vibrate(20);
+
+    setTimeout(() => {
+      machine.classList.remove('rolling');
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      document.getElementById('catCapText').textContent = pick.slice(0, 2);
+      winnerCap.classList.add('pop');
+      if (navigator.vibrate) navigator.vibrate([40, 80, 40]);
+
+      setTimeout(() => {
+        winnerCap.classList.add('open');
+        renderCatResult(pick);
+        btn.disabled = false;
+        scrollToEl('catResultSheet', 300);
+      }, 550);
+    }, 1400);
+  }
+
+  function renderCatResult(cat) {
+    const matches = stores.filter(s => allCats(s).includes(cat));
+    const sheet = document.getElementById('catResultSheet');
+    const listHTML = matches.length
+      ? `<div class="cat-match-list">` + matches.map((s, i) => {
+          const meals = (s.meals||[]).map(m => MEAL_LABELS[m]).join('·') || '—';
+          const priceTxt = (s.prices||[]).map(p => PRICE_LABEL[p]).filter(Boolean).join('/');
+          let mapUrl = '';
+          if (s.lat && s.lng) mapUrl = `https://maps.apple.com/?ll=${s.lat},${s.lng}&q=${encodeURIComponent(s.name)}`;
+          else if (s.address) mapUrl = `https://maps.apple.com/?q=${encodeURIComponent(s.address)}`;
+          return `<div class="cat-match-card cat-${esc(firstCat(s))}"${mapUrl?` data-map="${mapUrl}"`:''}>
+            <div class="cm-num">${String(i+1).padStart(2,'0')}</div>
+            <div class="cm-body">
+              <div class="cm-top">
+                <span class="cm-name">${esc(s.name)}</span>
+                <span class="cm-stars">${renderStars(s.stars||0)}</span>
+              </div>
+              <div class="cm-meta">
+                <span>${meals}</span>
+                ${priceTxt ? `<span class="cm-dot"></span><span>＄${esc(priceTxt)}</span>` : ''}
+              </div>
+            </div>
+          </div>`;
+        }).join('') + `</div>`
+      : `<div class="cat-empty">名單中還沒有 <b>${esc(cat)}</b> 類的店家<br><span style="font-size:11px;color:var(--ink-4);">到「我的名單」新增一家試試</span></div>`;
+
+    sheet.innerHTML = `
+      <div class="eyebrow">ANSWER · 今 天 吃</div>
+      <div class="big-cat">${esc(cat)}</div>
+      <div class="sub-line">就決定是這個方向了</div>
+      <div class="count-badge">名單中有 ${matches.length} 家 ${esc(cat)}</div>
+      ${listHTML}
+      <div class="cat-result-actions">
+        <button class="result-btn" onclick="pickCategory()">再抽方向</button>
+        ${matches.length > 0 ? `<button class="result-btn primary" onclick="goPickStoreWithCat('${esc(cat)}')">從這 ${matches.length} 家抽一間</button>` : ''}
+      </div>
+    `;
+    sheet.classList.add('show');
+    // Attach map clicks
+    sheet.querySelectorAll('.cat-match-card[data-map]').forEach(el => {
+      el.addEventListener('click', () => window.open(el.dataset.map, '_blank'));
+    });
+  }
+
+  window.goPickStoreWithCat = function(cat) {
+    // Switch to pick page and set filter
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-page="pickPage"]').classList.add('active');
+    document.getElementById('pickPage').classList.add('active');
+
+    filter.categories = [cat];
+    const c = document.getElementById('categoryChips');
+    c.querySelectorAll('.chip').forEach(x => {
+      x.classList.toggle('active', x.dataset.cat === cat);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setTimeout(pickStore, 300);
+  };
+
+  // ========== AUTO SCROLL helper ==========
+  function scrollToEl(id, delay = 0) {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const target = window.scrollY + rect.top - 20;
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    }, delay);
+  }
+
+  // ========== LIST ==========
   function renderStoreList() {
     const list = document.getElementById('storeList');
-    document.getElementById('storeCount').textContent = `共 ${stores.length} 家`;
+    document.getElementById('storeCount').textContent = `共 ${stores.length} 家 · MY LIST`;
     if (stores.length === 0) {
-      list.innerHTML = '<div class="empty-list">還沒有任何店家<br>點右上「＋ 新增店家」開始建立你的口袋名單</div>';
+      list.innerHTML = `<div class="empty-state">
+        <div class="glyph">空</div>
+        <div class="msg">還沒有任何店家<br>點右上「＋ 新增」開始建立口袋名單</div>
+      </div>`;
       return;
     }
-    list.innerHTML = stores.map(s => {
-      const meals = (s.meals||[]).map(m=>MEAL_LABELS[m]).join('、') || '—';
-      const addrShort = s.address ? (s.address.length>18 ? s.address.slice(0,18)+'…' : s.address) : '';
-      return `<div class="store-item" data-id="${s.id}">
-        <div class="store-item-top">
-          <span class="store-name">${esc(s.name)}</span>
-          <span class="store-stars">${renderStars(s.stars||0)}</span>
-        </div>
-        <div class="store-meta">
-          <span class="store-tag">${esc(s.category||'未分類')}</span>
-          <span>🍽 ${meals}</span>
-          ${addrShort ? `<span>📍 ${esc(addrShort)}</span>` : ''}
+    list.innerHTML = stores.map((s, i) => {
+      const meals = (s.meals||[]).map(m => MEAL_LABELS[m]).join('·') || '—';
+      const addrShort = s.address ? (s.address.length > 16 ? s.address.slice(0,16)+'…' : s.address) : '';
+      const cats = allCats(s);
+      const catTxt = cats.join(' · ') || '未分類';
+      const priceTxt = (s.prices||[]).map(p => PRICE_LABEL[p]).filter(Boolean).join('/');
+      return `<div class="store-card cat-${esc(firstCat(s))}" data-id="${s.id}">
+        <div class="store-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="store-body">
+          <div class="store-top">
+            <span class="store-name-txt">${esc(s.name)}</span>
+            <span class="store-stars-txt">${renderStars(s.stars||0)}</span>
+          </div>
+          <div class="store-meta-row">
+            <span class="store-cat-tag">${esc(catTxt)}</span>
+            <span>${meals}</span>
+            ${priceTxt ? `<span class="dot"></span><span>＄${esc(priceTxt)}</span>` : ''}
+            ${addrShort ? `<span class="dot"></span><span>${esc(addrShort)}</span>` : ''}
+          </div>
         </div>
       </div>`;
     }).join('');
-    list.querySelectorAll('.store-item').forEach(el => {
+    list.querySelectorAll('.store-card').forEach(el => {
       el.addEventListener('click', () => openModal(el.dataset.id));
     });
   }
 
+  // ========== MODAL ==========
   const overlay = document.getElementById('modalOverlay');
   document.getElementById('addStoreBtn').addEventListener('click', () => openModal(null));
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
@@ -495,13 +1960,34 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
     c.innerHTML = CATEGORIES.map(cat => `<button class="chip" data-v="${cat}">${cat}</button>`).join('');
     c.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        c.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-        chip.classList.add('active');
-        formState.category = chip.dataset.v;
+        chip.classList.toggle('active');
+        const v = chip.dataset.v;
+        if (chip.classList.contains('active')) {
+          if (!formState.categories.includes(v)) formState.categories.push(v);
+        } else {
+          formState.categories = formState.categories.filter(x => x !== v);
+        }
       });
     });
   }
   buildFormCatChips();
+
+  function buildFormPriceChips() {
+    const c = document.getElementById('fPriceChips');
+    c.innerHTML = PRICE_BUCKETS.map(b => `<button class="chip" data-v="${b.id}">${b.label}</button>`).join('');
+    c.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+        const v = chip.dataset.v;
+        if (chip.classList.contains('active')) {
+          if (!formState.prices.includes(v)) formState.prices.push(v);
+        } else {
+          formState.prices = formState.prices.filter(x => x !== v);
+        }
+      });
+    });
+  }
+  buildFormPriceChips();
 
   document.getElementById('fMealChips').querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -532,11 +2018,10 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
     editingId = id;
     const isEdit = !!id;
     document.getElementById('modalTitle').textContent = isEdit ? '編輯店家' : '新增店家';
-    // 新增模式才顯示匯入區
     document.getElementById('importBox').style.display = isEdit ? 'none' : 'block';
     document.getElementById('fImportUrl').value = '';
     document.getElementById('importClearBtn').classList.remove('show');
-    setImportHint('支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字', '');
+    setImportHint('支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行', '');
     const s = isEdit ? stores.find(x => x.id === id) : null;
     document.getElementById('fName').value = s?.name || '';
     document.getElementById('fAddr').value = s?.address || '';
@@ -544,8 +2029,9 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
     document.getElementById('fNote').value = s?.note || '';
     formState = {
       meals: [...(s?.meals || [])],
-      category: s?.category || '',
+      categories: s ? [...allCats(s)] : [],
       stars: s?.stars || 0,
+      prices: [...(s?.prices || [])],
       lat: s?.lat || null,
       lng: s?.lng || null
     };
@@ -553,7 +2039,10 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
       c.classList.toggle('active', formState.meals.includes(c.dataset.v));
     });
     document.getElementById('fCatChips').querySelectorAll('.chip').forEach(c => {
-      c.classList.toggle('active', c.dataset.v === formState.category);
+      c.classList.toggle('active', formState.categories.includes(c.dataset.v));
+    });
+    document.getElementById('fPriceChips').querySelectorAll('.chip').forEach(c => {
+      c.classList.toggle('active', formState.prices.includes(c.dataset.v));
     });
     updateStarsUI();
 
@@ -576,7 +2065,6 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
     saveBtn.addEventListener('click', saveStore);
     actions.appendChild(cancelBtn);
     actions.appendChild(saveBtn);
-
     overlay.classList.add('show');
   }
 
@@ -587,12 +2075,13 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
 
   function saveStore() {
     const name = document.getElementById('fName').value.trim();
-    if (!name) { alert('請輸入店名'); return; }
+    if (!name) { showToast('請輸入店名'); return; }
     const data = {
       name,
       meals: formState.meals,
-      category: formState.category,
+      categories: formState.categories,
       stars: formState.stars,
+      prices: formState.prices,
       address: document.getElementById('fAddr').value.trim(),
       hours: document.getElementById('fHours').value.trim(),
       note: document.getElementById('fNote').value.trim(),
@@ -608,6 +2097,7 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
     saveStores();
     closeModal();
     renderStoreList();
+    showToast(editingId ? '已更新' : '已新增');
   }
 
   function deleteStore() {
@@ -619,67 +2109,21 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
     renderStoreList();
   }
 
-  // 匯出：優先用傳統下載，失敗則改用 Web Share API（支援 PWA 模式）
-  document.getElementById('exportBtn').addEventListener('click', async () => {
-    if (stores.length === 0) {
-      alert('目前沒有資料可以匯出');
-      return;
-    }
-    const payload = {
-      app: 'what-to-eat',
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      stores: stores
-    };
-    const jsonStr = JSON.stringify(payload, null, 2);
+  // ========== IMPORT/EXPORT ==========
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    if (stores.length === 0) { showToast('沒有資料可匯出'); return; }
+    const payload = { app:'what-to-eat', version:2, exportedAt:new Date().toISOString(), stores };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
     const d = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const fname = `what-to-eat_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.json`;
-
-    // 偵測是否為 iOS PWA 模式
-    const isStandalone = window.navigator.standalone === true ||
-                         window.matchMedia('(display-mode: standalone)').matches;
-
-    // PWA 模式優先用 Web Share API
-    if (isStandalone && navigator.canShare) {
-      try {
-        const file = new File([jsonStr], fname, { type: 'application/json' });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: '吃什麼備份' });
-          return;
-        }
-      } catch (err) {
-        if (err.name === 'AbortError') return; // 使用者取消
-      }
-    }
-
-    // 標準下載
-    try {
-      const blob = new Blob([jsonStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fname;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch (err) {
-      // 最後備援：開新分頁顯示 JSON，讓使用者手動複製
-      const w = window.open();
-      if (w) {
-        w.document.title = fname;
-        w.document.body.innerText = jsonStr;
-      } else {
-        alert('下載失敗，請複製以下內容手動儲存：\n\n' + jsonStr.slice(0, 500) + '...');
-      }
-    }
+    a.href = url;
+    a.download = `what-to-eat_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('已匯出備份');
   });
-
-  // 匯入：讀取 JSON 檔
-  document.getElementById('importBtn').addEventListener('click', () => {
-    document.getElementById('importFile').click();
-  });
+  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
   document.getElementById('importFile').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -689,295 +2133,178 @@ html, body { background: linear-gradient(160deg, #1a1410 0%, #2d1f15 100%); colo
         const data = JSON.parse(ev.target.result);
         const incoming = Array.isArray(data) ? data : data.stores;
         if (!Array.isArray(incoming)) throw new Error('格式錯誤');
-        const valid = incoming.filter(s => s && typeof s.name === 'string' && s.name.trim());
-        if (valid.length === 0) {
-          alert('檔案裡沒有有效的店家資料');
-          return;
-        }
-        let mode;
-        if (stores.length === 0) {
-          mode = 'replace';
-        } else {
-          const choice = prompt(`目前已有 ${stores.length} 家，匯入檔有 ${valid.length} 家。\n\n輸入 1 = 合併（保留現有 + 加入新的）\n輸入 2 = 覆蓋（清空現有改用匯入的）\n其他 = 取消`, '1');
-          if (choice === '1') mode = 'merge';
-          else if (choice === '2') mode = 'replace';
-          else return;
-        }
-        if (mode === 'replace') {
+        const valid = incoming
+          .filter(s => s && typeof s.name === 'string' && s.name.trim())
+          .map(s => ({
+            ...s,
+            categories: s.categories || (s.category ? [s.category] : [])
+          }));
+        if (valid.length === 0) { showToast('檔案無有效資料'); return; }
+        if (stores.length > 0 && !confirm(`將合併 ${valid.length} 家到現有名單？按取消則覆蓋。`)) {
           stores = valid.map(s => ({ ...s, id: s.id || uid() }));
         } else {
           const existingNames = new Set(stores.map(s => s.name));
-          const toAdd = valid
-            .filter(s => !existingNames.has(s.name))
-            .map(s => ({ ...s, id: uid() }));
+          const toAdd = valid.filter(s => !existingNames.has(s.name)).map(s => ({ ...s, id: uid() }));
           stores = stores.concat(toAdd);
-          alert(`合併完成：新增 ${toAdd.length} 家，略過 ${valid.length - toAdd.length} 家重複。`);
         }
         saveStores();
         renderStoreList();
-      } catch (err) {
-        alert('匯入失敗：檔案格式不正確');
-      } finally {
-        e.target.value = '';
-      }
+        showToast('匯入完成');
+      } catch (err) { showToast('匯入失敗 · 格式錯誤'); }
+      finally { e.target.value = ''; }
     };
     reader.readAsText(file);
   });
-
-  // 清空全部
   document.getElementById('clearBtn').addEventListener('click', () => {
-    if (stores.length === 0) {
-      alert('本來就是空的');
-      return;
-    }
-    if (!confirm(`確定要清空全部 ${stores.length} 家店嗎？\n此動作無法復原（建議先匯出備份）。`)) return;
-    if (!confirm('再次確認：真的要清空嗎？')) return;
+    if (stores.length === 0) { showToast('本來就是空的'); return; }
+    if (!confirm(`確定清空全部 ${stores.length} 家？`)) return;
+    if (!confirm('最後確認：真的要清空？')) return;
     stores = [];
     saveStores();
     renderStoreList();
   });
 
-  // ===== Google Maps 連結解析 =====
+  // ========== PARSERS ==========
   function setImportHint(text, type) {
     const el = document.getElementById('importHint');
     el.textContent = text;
     el.className = 'import-hint' + (type ? ' ' + type : '');
   }
-
-  // 解析「郵遞區號+地址+店名」這種單行純文字
-  // 例子：104臺北市中山區南京西路12號鼎泰豐 南西店B2
-  //      10491 台北市中山區南京西路 12 號 2 樓 某某餐廳
   function parsePlainTextAddress(raw) {
     let s = raw.trim().replace(/\s+/g, ' ');
     if (!s) return null;
-
-    // 拔開頭郵遞區號（3-6 碼數字，可能夾空白或 "-"）
     s = s.replace(/^(\d{3,6})[\s\-]*/, '');
-
-    // 找地址起始：必須是「X縣/X市」或「X縣Y市」
     const cityMatch = s.match(/([\u4e00-\u9fa5]{1,3}[縣市])/);
     if (!cityMatch) return null;
-    const cityStart = s.indexOf(cityMatch[0]);
-    // 丟掉縣市名前面的雜訊
-    s = s.slice(cityStart);
-
-    // 地址結尾特徵：在「號」「樓」「室」「F」「B數字」這類關鍵字之後
-    // 抓出「地址」區段：從開頭到最後一個地址關鍵字結束
-    // 正則優先匹配 ...號X樓 / ...號 之X / ...號 XF / ...號 BX / ...號之X
+    s = s.slice(s.indexOf(cityMatch[0]));
     const addrPattern = /^(.+?[路街道巷弄段]\s?\d+[\-之\d]*號(?:\s?[\d\-之]+(?:樓|F|f)?)?(?:\s?之\d+)?(?:\s?[Bb]\d+)?(?:\s?\d+\s?樓)?)/;
     let addrMatch = s.match(addrPattern);
-
-    // 若沒匹配到（例如地址沒有路名只有「XX區XX號」），試寬鬆版
-    if (!addrMatch) {
-      addrMatch = s.match(/^(.+?\d+\s?號(?:\s?[Bb]?\d+\s?[樓F]?)?(?:\s?之\d+)?)/);
-    }
+    if (!addrMatch) addrMatch = s.match(/^(.+?\d+\s?號(?:\s?[Bb]?\d+\s?[樓F]?)?(?:\s?之\d+)?)/);
     if (!addrMatch) return null;
-
-    let address = addrMatch[1].trim();
-    let rest = s.slice(addrMatch[0].length).trim();
-
-    // 店名可能還帶分店「XX 南西店B2」→ 這個「B2」是店內位置，保留給備註
-    // 這裡單純把剩下的當店名
-    let name = rest;
-
-    // 清理地址中多餘空白
-    address = address.replace(/\s+/g, '');
-
+    let address = addrMatch[1].trim().replace(/\s+/g, '');
+    let name = s.slice(addrMatch[0].length).trim();
     if (!name) return null;
     return { name, address };
   }
-
-  // 解析 Google Maps 連結，抓出店名和地址
   function parseGoogleMapsUrl(raw) {
     const url = raw.trim();
     if (!url) return null;
-
-    // 短連結判斷
-    if (/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)) {
-      return { shortLink: true };
-    }
-
+    if (/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)) return { shortLink: true };
     try {
       const u = new URL(url);
-      if (!/google\.[^/]+/.test(u.hostname) && !u.hostname.includes('maps')) {
-        return null;
-      }
-
-      const result = { name: '', address: '', lat: null, lng: null };
-
-      // 格式 1: /maps/place/店名/@lat,lng,zoom/data=...
+      if (!/google\.[^/]+/.test(u.hostname) && !u.hostname.includes('maps')) return null;
+      const result = { name:'', address:'', lat:null, lng:null };
       const placeMatch = u.pathname.match(/\/maps\/place\/([^\/]+)/);
       if (placeMatch) {
         const fullPlace = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ').trim();
-        // 有些連結的 place 段用 "," 分隔店名和地址
         if (/[,，]/.test(fullPlace)) {
           const parts = fullPlace.split(/[,，]/).map(s => s.trim()).filter(Boolean);
           result.name = parts[0];
           if (parts.length > 1) {
-            const addrCandidate = parts.slice(1).join(', ');
-            if (/\d/.test(addrCandidate) || /[路街道巷弄號]/.test(addrCandidate)) {
-              result.address = addrCandidate;
-            }
+            const addr = parts.slice(1).join(', ');
+            if (/\d/.test(addr) || /[路街道巷弄號]/.test(addr)) result.address = addr;
           }
         } else {
-          // 沒有逗號分隔 → 可能整串是「郵遞區號+地址+店名」混在一起
-          // 先試用純文字解析器拆分
           const textParsed = parsePlainTextAddress(fullPlace);
-          if (textParsed && textParsed.name && textParsed.address) {
-            result.name = textParsed.name;
-            result.address = textParsed.address;
-          } else {
-            // 純文字解析也失敗，整串當店名
-            result.name = fullPlace;
-          }
+          if (textParsed?.name && textParsed?.address) {
+            result.name = textParsed.name; result.address = textParsed.address;
+          } else result.name = fullPlace;
         }
       }
-
-      // 格式 2: /maps/search/店名?...
       if (!result.name) {
-        const searchMatch = u.pathname.match(/\/maps\/search\/([^\/\?]+)/);
-        if (searchMatch) {
-          result.name = decodeURIComponent(searchMatch[1]).replace(/\+/g, ' ').trim();
-        }
+        const sm = u.pathname.match(/\/maps\/search\/([^\/\?]+)/);
+        if (sm) result.name = decodeURIComponent(sm[1]).replace(/\+/g, ' ').trim();
       }
-
-      // 格式 3: q 參數
       if (!result.name) {
         const q = u.searchParams.get('q');
         if (q) result.name = q.trim();
       }
-
-      // 抓座標 @lat,lng,zoom（這個是「目前視角」，街景時可能不是店家位置）
       const coordMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-      if (coordMatch) {
-        result.lat = parseFloat(coordMatch[1]);
-        result.lng = parseFloat(coordMatch[2]);
-      }
-
-      // 更精確的座標在 data 參數內 !3dLAT!4dLNG（這是店家真實位置，優先用）
+      if (coordMatch) { result.lat = parseFloat(coordMatch[1]); result.lng = parseFloat(coordMatch[2]); }
       const preciseMatch = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
-      if (preciseMatch) {
-        result.lat = parseFloat(preciseMatch[1]);
-        result.lng = parseFloat(preciseMatch[2]);
-      }
-
-      // 若地址抓不到但有座標，用座標當備援地址（Apple Maps 可以直接用座標導航）
+      if (preciseMatch) { result.lat = parseFloat(preciseMatch[1]); result.lng = parseFloat(preciseMatch[2]); }
       if (!result.address && result.lat && result.lng) {
         result.address = `${result.lat},${result.lng}`;
         result.addressIsCoord = true;
       }
-
       if (!result.name) return null;
       return result;
-    } catch (e) {
-      return null;
-    }
+    } catch(e) { return null; }
   }
-
-  // 統一入口：判斷是 URL 還是純文字，分別呼叫對應解析器
   function parseInput(raw) {
     const s = raw.trim();
     if (!s) return null;
-    // 看起來像 URL
-    if (/^https?:\/\//i.test(s) || /google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(s)) {
-      return parseGoogleMapsUrl(s);
-    }
-    // 否則當純文字
+    if (/^https?:\/\//i.test(s) || /google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(s)) return parseGoogleMapsUrl(s);
     return parsePlainTextAddress(s);
   }
-
   document.getElementById('importParseBtn').addEventListener('click', () => {
     const raw = document.getElementById('fImportUrl').value;
-    if (!raw.trim()) {
-      setImportHint('請先貼上連結或地址', 'error');
-      return;
-    }
+    if (!raw.trim()) { setImportHint('請先貼上連結或地址', 'error'); return; }
     const parsed = parseInput(raw);
-
-    if (!parsed) {
-      setImportHint('無法辨識，請貼 Google Maps 連結、或「郵遞區號+地址+店名」格式', 'error');
-      return;
-    }
-
-    if (parsed.shortLink) {
-      const rawUrl = raw.trim();
-      const safe = rawUrl.replace(/"/g, '&quot;');
-      document.getElementById('importHint').className = 'import-hint error';
-      document.getElementById('importHint').innerHTML =
-        `偵測到 Google Maps 短連結，無法直接解析。<br>` +
-        `① <a href="${safe}" target="_blank" rel="noopener">點這裡在新分頁打開</a><br>` +
-        `② 等 Google Maps 載入完成後，從網址列複製完整的長連結<br>` +
-        `③ 回來貼到此欄位，再按解析<br>` +
-        `（或直接在 Google Maps 點「複製地址」，貼回來也行）`;
-      return;
-    }
-
+    if (!parsed) { setImportHint('無法辨識格式', 'error'); return; }
+    if (parsed.shortLink) { setImportHint('短連結無法解析，請先打開取得完整連結', 'error'); return; }
     document.getElementById('fName').value = parsed.name || '';
-    if (parsed.address) {
-      document.getElementById('fAddr').value = parsed.address;
-    }
-
-    // 儲存座標到臨時狀態(未來可用)
-    formState.lat = parsed.lat;
-    formState.lng = parsed.lng;
-
+    if (parsed.address) document.getElementById('fAddr').value = parsed.address;
+    formState.lat = parsed.lat; formState.lng = parsed.lng;
     const filled = [];
     if (parsed.name) filled.push('店名');
-    if (parsed.address && !parsed.addressIsCoord) filled.push('地址');
-    if (parsed.addressIsCoord) filled.push('地址(座標)');
-    else if (parsed.lat) filled.push('座標');
-    let msg = `✓ 已自動填入：${filled.join('、')}`;
-    if (parsed.addressIsCoord) {
-      msg += '\n※ 此連結沒有文字地址，用座標代替（導航仍可用）。若要顯示門牌地址，可手動替換。';
-    }
-    setImportHint(msg, 'success');
+    if (parsed.address) filled.push(parsed.addressIsCoord ? '地址(座標)' : '地址');
+    setImportHint(`✓ 已填入：${filled.join('、')}`, 'success');
   });
-
-  // 貼上時自動解析
-  document.getElementById('fImportUrl').addEventListener('paste', (e) => {
-    setTimeout(() => {
-      const v = e.target.value.trim();
-      updateClearBtn();
-      if (!v) return;
-      // URL 或疑似台灣地址（包含縣市）都自動觸發
-      if (/google\.|maps\.app\.goo\.gl|goo\.gl\/maps/.test(v) ||
-          /[\u4e00-\u9fa5]{1,3}[縣市]/.test(v)) {
-        document.getElementById('importParseBtn').click();
-      }
-    }, 50);
-  });
-
-  // 輸入時同步顯示/隱藏清除按鈕
-  function updateClearBtn() {
+  document.getElementById('fImportUrl').addEventListener('input', () => {
     const input = document.getElementById('fImportUrl');
-    const btn = document.getElementById('importClearBtn');
-    btn.classList.toggle('show', input.value.length > 0);
-  }
-  document.getElementById('fImportUrl').addEventListener('input', updateClearBtn);
-
-  // 清除按鈕：一鍵清空匯入欄 + 重置提示
+    document.getElementById('importClearBtn').classList.toggle('show', input.value.length > 0);
+  });
   document.getElementById('importClearBtn').addEventListener('click', () => {
-    const input = document.getElementById('fImportUrl');
-    input.value = '';
-    updateClearBtn();
-    setImportHint('支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行文字', '');
-    input.focus();
+    document.getElementById('fImportUrl').value = '';
+    document.getElementById('importClearBtn').classList.remove('show');
+    setImportHint('支援 Google Maps 連結、或「郵遞區號+地址+店名」一整行', '');
   });
-
-  // 🔍 用 Google Maps 搜尋此店
   document.getElementById('searchGoogleBtn').addEventListener('click', () => {
     const name = document.getElementById('fName').value.trim();
-    if (!name) {
-      alert('請先輸入店名');
-      document.getElementById('fName').focus();
-      return;
-    }
-    const url = `https://www.google.com/maps/search/${encodeURIComponent(name)}`;
-    window.open(url, '_blank');
+    if (!name) { showToast('請先輸入店名'); return; }
+    window.open(`https://www.google.com/maps/search/${encodeURIComponent(name)}`, '_blank');
   });
 
-  renderStoreList();
-</script>
+  // ========== TOAST ==========
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  }
 
+  // ========== TWEAKS (kept simple) ==========
+  let tweakState = { ...TWEAK_DEFAULTS };
+  function applyTweaks(t) {
+    document.documentElement.style.setProperty('--vermilion', t.accent);
+    const dark = shade(t.accent, -25);
+    document.documentElement.style.setProperty('--vermilion-dark', dark);
+    document.documentElement.style.setProperty('--seal', t.accent);
+    const fontMap = {
+      klee: "'Klee One', 'Noto Sans TC', sans-serif",
+      serif: "'Noto Serif TC', serif",
+      sans: "'Noto Sans TC', sans-serif"
+    };
+    document.body.style.fontFamily = fontMap[t.font] || fontMap.sans;
+  }
+  function shade(hex, percent) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = (n>>16)&0xff, g = (n>>8)&0xff, b = n&0xff;
+    r = Math.max(0, Math.min(255, r + Math.round(r*percent/100)));
+    g = Math.max(0, Math.min(255, g + Math.round(g*percent/100)));
+    b = Math.max(0, Math.min(255, b + Math.round(b*percent/100)));
+    return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+  }
+  applyTweaks(tweakState);
+  window.parent.postMessage({type:'__edit_mode_available'}, '*');
+
+  // ========== INIT ==========
+  applyRecommendation();
+  renderStoreList();
+  setInterval(applyRecommendation, 60000);
+</script>
 </body>
 </html>
