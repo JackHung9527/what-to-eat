@@ -64,7 +64,7 @@
     min-height: 100vh;
     max-width: 440px;
     margin: 0 auto;
-    padding: 0 20px max(180px, calc(env(safe-area-inset-bottom) + var(--nav-h) + 32px)) 20px;
+    padding: 0 20px calc(env(safe-area-inset-bottom) + 200px) 20px;
     position: relative;
   }
 
@@ -2321,27 +2321,21 @@
   window.parent.postMessage({type:'__edit_mode_available'}, '*');
 
   // ========== SYNC NAV PADDING ==========
-  // 量測底部 nav 實際高度，動態寫回 body padding-bottom，避免內容被 nav 擋住
-  // 多次重算是為了應對字型延遲載入 / PWA layout 初始抖動 / iOS URL bar 出現消失
+  // 三層保險確保底部 nav 不擋內容：CSS 固定值 + JS 動態量測 + 每個 page 底部 spacer
   function syncNavPadding() {
     const nav = document.querySelector('.bottom-nav');
     if (!nav) return;
     const h = nav.getBoundingClientRect().height;
     if (h <= 0) return;
-    const pad = Math.max(h + 32, 180);
-    document.body.style.paddingBottom = pad + 'px';
+    document.body.style.paddingBottom = Math.max(h + 40, 220) + 'px';
   }
   syncNavPadding();
   requestAnimationFrame(syncNavPadding);
-  setTimeout(syncNavPadding, 100);
-  setTimeout(syncNavPadding, 500);
+  setTimeout(syncNavPadding, 300);
   setTimeout(syncNavPadding, 1500);
   window.addEventListener('resize', syncNavPadding);
   window.addEventListener('orientationchange', syncNavPadding);
   window.addEventListener('load', syncNavPadding);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(syncNavPadding);
-  }
 
   // ========== INIT ==========
   applyRecommendation();
