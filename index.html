@@ -1103,7 +1103,7 @@
     place-items: center;
     box-shadow: 0 4px 14px rgba(42,37,32,0.28), 0 10px 26px rgba(42,37,32,0.18);
     z-index: 30;
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease, opacity 0.25s ease;
     font-family: 'Noto Serif TC', serif;
     font-weight: 900;
     font-size: 22px;
@@ -1111,6 +1111,10 @@
   }
   .nav-fab:active { transform: scale(0.92); }
   .nav-fab:hover { transform: translateY(-1px); }
+  body.nav-sheet-open .nav-fab {
+    opacity: 0;
+    pointer-events: none;
+  }
 
   .nav-sheet-overlay {
     position: fixed; inset: 0;
@@ -1693,18 +1697,22 @@
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  navFab.addEventListener('click', () => {
+  function openNavSheet() {
     navSheetOverlay.classList.add('show');
-  });
+    document.body.classList.add('nav-sheet-open');
+  }
+  function closeNavSheet() {
+    navSheetOverlay.classList.remove('show');
+    document.body.classList.remove('nav-sheet-open');
+  }
+  navFab.addEventListener('click', openNavSheet);
   navSheetOverlay.addEventListener('click', (e) => {
-    if (e.target === navSheetOverlay) {
-      navSheetOverlay.classList.remove('show');
-    }
+    if (e.target === navSheetOverlay) closeNavSheet();
   });
   document.querySelectorAll('.nav-sheet-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       switchPage(btn.dataset.page);
-      navSheetOverlay.classList.remove('show');
+      closeNavSheet();
     });
   });
 
