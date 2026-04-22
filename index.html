@@ -2327,7 +2327,7 @@
     if (!nav) return;
     const h = nav.getBoundingClientRect().height;
     if (h <= 0) return;
-    document.body.style.paddingBottom = Math.max(h + 40, 220) + 'px';
+    document.body.style.paddingBottom = Math.max(h + 40, 400) + 'px';
   }
   syncNavPadding();
   requestAnimationFrame(syncNavPadding);
