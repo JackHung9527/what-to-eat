@@ -26,7 +26,7 @@
     --line-strong: rgba(42,37,32,0.28);
     --shadow: 0 2px 12px rgba(60,40,20,0.08), 0 8px 40px rgba(60,40,20,0.06);
     --shadow-lg: 0 4px 24px rgba(60,40,20,0.12), 0 20px 60px rgba(60,40,20,0.1);
-    --nav-h: 84px;
+    --nav-h: 120px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -2303,16 +2303,27 @@
   window.parent.postMessage({type:'__edit_mode_available'}, '*');
 
   // ========== SYNC NAV PADDING ==========
+  // 量測底部 nav 實際高度，動態寫回 body padding-bottom，避免內容被 nav 擋住
+  // 多次重算是為了應對字型延遲載入 / PWA layout 初始抖動 / iOS URL bar 出現消失
   function syncNavPadding() {
     const nav = document.querySelector('.bottom-nav');
     if (!nav) return;
     const h = nav.getBoundingClientRect().height;
-    document.body.style.paddingBottom = (h + 24) + 'px';
+    if (h <= 0) return;
+    const pad = Math.max(h + 32, 160);
+    document.body.style.paddingBottom = pad + 'px';
   }
   syncNavPadding();
+  requestAnimationFrame(syncNavPadding);
+  setTimeout(syncNavPadding, 100);
+  setTimeout(syncNavPadding, 500);
+  setTimeout(syncNavPadding, 1500);
   window.addEventListener('resize', syncNavPadding);
   window.addEventListener('orientationchange', syncNavPadding);
   window.addEventListener('load', syncNavPadding);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncNavPadding);
+  }
 
   // ========== INIT ==========
   applyRecommendation();
